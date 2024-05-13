@@ -18,7 +18,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	private int size = 14;
 	private double pointPercentage;
 
-	//-------new parameters-------
 	private int mapWidth;
 	private int mapHeight;
 	private double mediumConiferousHeight;
@@ -90,8 +89,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 
 
-		for (int x = 0; x < points.length; ++x) {
-			for (int y = 0; y < points[x].length; ++y) {
+		for (int x = 1; x < points.length-1; ++x) {
+			for (int y = 1; y < points[x].length-1; ++y) {
 				// Moore'a Neighbourhood
 				int startX = Math.max(0, x - 1);
 				int endX = Math.min(points.length - 1, x + 1);
@@ -147,29 +146,13 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				if (points[x][y].getState() != 0) {
 					switch (points[x][y].getState()) {
 					case 1:
-						g.setColor(new Color(0x0000ff));
-
-						break;
-					case 2:
 						g.setColor(new Color(0x00ff00));
 
 						break;
-					case 3:
+					case 2:
 						g.setColor(new Color(0xff0000));
 
-						break;						
-					case 4:
-						g.setColor(new Color(0x000000));
-
-						break;						
-					case 5:
-						g.setColor(new Color(0x444444));
-
-						break;						
-					case 6:
-						g.setColor(new Color(0xffffff));
-
-						break;						
+						break;
 					}
 					g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
 				}

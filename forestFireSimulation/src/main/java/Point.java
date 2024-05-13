@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Point {
 	// Nie byłem pewien czy wysokość będzie robić typu int czy double , na razie dałem int
@@ -11,11 +12,12 @@ public class Point {
 	private boolean deciduous;
 	private int height;
 	private List<Double> state;
-	private List<Double> temperature;
+	protected List<Double> temperature;
 	private List<Point> neighbors;
 	private int currentState;
 	private int nextState;
-	private int numStates = 6;
+	private int numStates = 3;
+	static Random RND = new Random();
 	
 	public Point() {
 		this.currentState = 0;
@@ -23,6 +25,7 @@ public class Point {
 		this.neighbors = new ArrayList<Point>();
 		this.state = new ArrayList<>();
 		this.temperature = new ArrayList<>();
+		temperature.add(30.0);
 		for(int i = 0 ; i < height;i ++){
 			state.add(1.0);
 		}
@@ -44,7 +47,22 @@ public class Point {
 		currentState = nextState;
 	}
 
-	public void calculateNewState(){
+	public void calculateNewState() {
+		if(currentState > 0) {
+			double burningTemperature = 400.0;
+			for (Point neighbor : neighbors) {
+				if (neighbor.temperature.get(0) >= burningTemperature || neighbor.currentState == 2) {
+					if (RND.nextDouble() < 0.05) {
+						temperature.set(0, 400.0);
+						nextState = 2;
+						return;
+					}
+					break;
+				}
+			}
+		}
+
+		nextState = currentState;
 	}
 	
 	public void addNeighbor(Point nei) {
