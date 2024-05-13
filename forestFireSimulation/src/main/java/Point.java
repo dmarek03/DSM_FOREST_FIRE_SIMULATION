@@ -64,6 +64,12 @@ public class Point {
 
 		nextState = currentState;
 	}
+
+	public void clear() {
+		temperature.set(0,0.0);
+		currentState = 0;
+		nextState = 0;
+	}
 	
 	public void addNeighbor(Point nei) {
 		neighbors.add(nei);
