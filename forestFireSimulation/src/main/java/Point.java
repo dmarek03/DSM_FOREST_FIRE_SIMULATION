@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Point {
 	public static Integer []types ={0,1,2,3,4,5};
+	private static final int LEVELS = 10;
 	private int elevation;
 	public boolean litter;
 	public boolean floor;
@@ -14,19 +15,24 @@ public class Point {
 	private List<Double> state;
 	protected List<Double> temperature;
 	private List<Point> neighbors;
+	private List<Double> nextState;
+	private List<Double> nextTemperature;
 	public int currentState;
 	private int numStates = 3;
 	static Random RND = new Random();
-	private double mediumConiferousHeight;
-	private double mediumDeciduousHeight;
+	private double mediumConiferousHeight = 25;
+	private double burningTemperature = 400.0;
+	private double mediumDeciduousHeight = 35;
 	private double mediumUnderstoryHeight;
 	private double mediumFloorHeight;
-	private double mediumConiferousHeightVariance;
-	private double mediumDeciduousHeightVariance;
+	private double mediumConiferousHeightVariance = 25;
+	private double mediumDeciduousHeightVariance = 25;
 	private double mediumUnderstoryHeightVariance;
 	private double mediumFloorHeightVariance;
 	private double mediumLitterHeightVariance;
 	private double mediumLitterHeight;
+	public List<Boolean> onFire;
+	private double fireGrowthRate = 0.05;
 	
 	public Point() {
 		this.neighbors = new ArrayList<Point>();
@@ -43,10 +49,20 @@ public class Point {
 		currentState = 0;
 		state = new ArrayList<>();
 		temperature = new ArrayList<>();
+		nextState = new ArrayList<>();
+		nextTemperature = new ArrayList<>();
+		onFire = new ArrayList<>();
 
-		for(int i = 0 ; i < height; i++){
+		for(int i = 0 ; i < LEVELS; i++){
 			state.add(1.0);
 			temperature.add(30.0);
+			nextState.add(1.0);
+			nextTemperature.add(30.0);
+			onFire.add(Boolean.FALSE);
+
+			if(RND.nextDouble() < 0.001) {
+				temperature.set(i,500.0);
+			}
 		}
 	}
 
@@ -60,7 +76,6 @@ public class Point {
 
 	public void initializeFloor() {
 		initializeEmpty();
-		litter = true;
 		floor = true;
 		currentState = 2;
 
@@ -69,8 +84,6 @@ public class Point {
 
 	public void initializeUnderstory() {
 		initializeEmpty();
-		litter = true;
-		floor = true;
 		understory = true;
 		currentState = 3;
 
@@ -79,9 +92,6 @@ public class Point {
 
 	public void initializeConiferous() {
 		initializeEmpty();
-		litter = true;
-		floor = true;
-		understory = true;
 		coniferous = true;
 		currentState = 4;
 
@@ -90,9 +100,6 @@ public class Point {
 
 	public void initializeDeciduous() {
 		initializeEmpty();
-		litter = true;
-		floor = true;
-		understory = true;
 		deciduous = true;
 		currentState = 5;
 
@@ -103,14 +110,34 @@ public class Point {
 		return currentState;
 	}
 
+	public void update() {
+		for(int i = 0; i < LEVELS; i++) {
+			state.set(i,nextState.get(i));
+			temperature.set(i,nextTemperature.get(i));
+			if(temperature.get(i) >= burningTemperature) {
+				onFire.set(i,Boolean.TRUE);
+			} else {
+				onFire.set(i,Boolean.FALSE);
+			}
+		}
+	}
+
 	public void calculateNewState() {
+		for(int i = 0; i < LEVELS; i++) {
+			if(onFire.get(i) == Boolean.TRUE) {
+				nextState.set(i, state.get(i));
+				nextState.set(i, state.get(i)*(1-0.01*temperature.get(i)/burningTemperature));
+				nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
+			}
+		}
+
 		if(currentState > 0) {
-			double burningTemperature = 400.0;
 			for (Point neighbor : neighbors) {
-				if (neighbor.temperature.get(0) >= burningTemperature || neighbor.currentState == 2) {
-					if (RND.nextDouble() < 0.05) {
-						temperature.set(0, 400.0);
-						return;
+				for(int i = 0; i < LEVELS; i++) {
+					if (neighbor.temperature.get(i) >= burningTemperature) {
+						if (RND.nextDouble() < 0.05) {
+							nextTemperature.set(i, neighbor.temperature.get(i));
+						}
 					}
 				}
 			}

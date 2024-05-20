@@ -50,6 +50,10 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for (int y = 0; y < points[x].length; ++y)
 				points[x][y].calculateNewState();
 
+		for (int x = 0; x < points.length; ++x)
+			for (int y = 0; y < points[x].length; ++y)
+				points[x][y].update();
+
 		this.repaint();
 	}
 
@@ -149,6 +153,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 							g.setColor(new Color(0x6aa60a));
 
 							break;
+					}
+					for(int i = 0; i < 10; i++) {
+						if(points[x][y].onFire.get(i) == Boolean.TRUE) {
+							g.setColor(new Color(0xff0000));
+						}
 					}
 					g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
 				}
