@@ -3,19 +3,19 @@ import java.util.List;
 import java.util.Random;
 
 public class Point {
-	// Nie byłem pewien czy wysokość będzie robić typu int czy double , na razie dałem int
+	public static Integer []types ={0,1,2,3,4,5};
 	private int elevation;
-	private boolean litter;
-	private boolean floor;
-	private boolean understory;
-	private boolean coniferous;
-	private boolean deciduous;
+	public boolean litter;
+	public boolean floor;
+	public boolean understory;
+	public boolean coniferous;
+	public boolean deciduous;
 	private int height;
 	private List<Double> state;
 	protected List<Double> temperature;
 	private List<Point> neighbors;
-	private int currentState;
-	private int nextState;
+	public int currentState;
+	public int nextState;
 	private int numStates = 3;
 	static Random RND = new Random();
 	
@@ -29,10 +29,6 @@ public class Point {
 		for(int i = 0 ; i < height;i ++){
 			state.add(1.0);
 		}
-	}
-
-	public void clicked() {
-		currentState=(++currentState)%numStates;	
 	}
 	
 	public int getState() {
@@ -57,7 +53,6 @@ public class Point {
 						nextState = 2;
 						return;
 					}
-					break;
 				}
 			}
 		}

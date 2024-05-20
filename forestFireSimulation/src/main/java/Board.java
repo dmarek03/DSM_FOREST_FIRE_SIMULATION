@@ -15,6 +15,7 @@ import javax.swing.event.MouseInputListener;
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
 	private static final long serialVersionUID = 1L;
 	private Point[][] points;
+	public int editType=0;
 	private int size = 14;
 	private double pointPercentage;
 
@@ -53,8 +54,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 	// single iteration
 	public void iteration() {
-
-
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y)
 				points[x][y].calculateNewState();
@@ -92,19 +91,15 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		for (int x = 1; x < points.length-1; ++x) {
 			for (int y = 1; y < points[x].length-1; ++y) {
 				// Moore'a Neighbourhood
-				int startX = Math.max(0, x - 1);
-				int endX = Math.min(points.length - 1, x + 1);
+				points[x][y].addNeighbor(points[x][y-1]);
+				points[x][y].addNeighbor(points[x+1][y]);
+				points[x][y].addNeighbor(points[x+1][y+1]);
+				points[x][y].addNeighbor(points[x-1][y]);
+				points[x][y].addNeighbor(points[x-1][y-1]);
+				points[x][y].addNeighbor(points[x+1][y-1]);
+				points[x][y].addNeighbor(points[x+1][y+1]);
+				points[x][y].addNeighbor(points[x-1][y+1]);
 
-				int startY = Math.max(0, y - 1);
-				int endY = Math.min(points[x].length - 1, y + 1);
-
-				for (int i = startX; i <= endX; i++) {
-					for (int j = startY; j <= endY; j++) {
-						if (x != i || y != j) {
-							points[x][y].addNeighbor(points[i][j]);
-						}
-					}
-				}
 			}
 		}
 
@@ -145,14 +140,26 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for (y = 0; y < points[x].length; ++y) {
 				if (points[x][y].getState() != 0) {
 					switch (points[x][y].getState()) {
-					case 1:
-						g.setColor(new Color(0x00ff00));
+						case 1:
+							g.setColor(new Color(0x59350e));
 
-						break;
-					case 2:
-						g.setColor(new Color(0xff0000));
+							break;
+						case 2:
+							g.setColor(new Color(0x9c6427));
 
-						break;
+							break;
+						case 3:
+							g.setColor(new Color(0xadd962));
+
+							break;
+						case 4:
+							g.setColor(new Color(0x364f0d));
+
+							break;
+						case 5:
+							g.setColor(new Color(0x6aa60a));
+
+							break;
 					}
 					g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
 				}
@@ -165,7 +172,39 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-			points[x][y].clicked();
+			if(editType == 1) {
+				points[x][y].litter = true;
+				points[x][y].floor = false;
+				points[x][y].understory = false;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 2) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = false;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 3) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 4) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].coniferous = true;
+				points[x][y].deciduous = false;
+			} else if(editType == 5) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].deciduous = true;
+				points[x][y].coniferous = false;
+			}
+			points[x][y].currentState = editType;
+			points[x][y].nextState = editType;
 			this.repaint();
 		}
 	}
@@ -180,7 +219,39 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		int x = e.getX() / size;
 		int y = e.getY() / size;
 		if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-			points[x][y].setState(1);
+			if(editType == 1) {
+				points[x][y].litter = true;
+				points[x][y].floor = false;
+				points[x][y].understory = false;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 2) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = false;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 3) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].coniferous = false;
+				points[x][y].deciduous = false;
+			} else if(editType == 4) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].coniferous = true;
+				points[x][y].deciduous = false;
+			} else if(editType == 5) {
+				points[x][y].litter = true;
+				points[x][y].floor = true;
+				points[x][y].understory = true;
+				points[x][y].deciduous = true;
+				points[x][y].coniferous = false;
+			}
+			points[x][y].currentState = editType;
+			points[x][y].nextState = editType;
 			this.repaint();
 		}
 	}
