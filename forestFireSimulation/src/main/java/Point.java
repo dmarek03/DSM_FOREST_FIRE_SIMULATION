@@ -12,7 +12,7 @@ public class Point {
 	public boolean coniferous;
 	public boolean deciduous;
 	private double height;
-	private List<Double> state;
+	public List<Double> state;
 	protected List<Double> temperature;
 	private List<Point> neighbors;
 	private List<Double> nextState;

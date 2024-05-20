@@ -155,10 +155,14 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 							break;
 					}
 					for(int i = 0; i < 10; i++) {
+						if(points[x][y].state.get(i) < 1) {
+							g.setColor(new Color(0x333333));
+						}
 						if(points[x][y].onFire.get(i) == Boolean.TRUE) {
 							g.setColor(new Color(0xff0000));
 						}
 					}
+
 					g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
 				}
 			}
