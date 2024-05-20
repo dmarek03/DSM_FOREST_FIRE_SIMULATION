@@ -58,9 +58,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 			for (int y = 0; y < points[x].length; ++y)
 				points[x][y].calculateNewState();
 
-		for (int x = 0; x < points.length; ++x)
-			for (int y = 0; y < points[x].length; ++y)
-				points[x][y].changeState();
 		this.repaint();
 	}
 
@@ -68,7 +65,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 	public void clear() {
 		for (int x = 0; x < points.length; ++x)
 			for (int y = 0; y < points[x].length; ++y) {
-				points[x][y].clear();
+				points[x][y].initializeEmpty();
 			}
 		this.repaint();
 	}
@@ -81,7 +78,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 				points[x][y] = new Point();
 
 				if(Math.random() < pointPercentage){
-					points[x][y].setState(0);
+					points[x][y].currentState = 0;
 				}
 			}
 		}
@@ -173,38 +170,18 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		int y = e.getY() / size;
 		if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
 			if(editType == 1) {
-				points[x][y].litter = true;
-				points[x][y].floor = false;
-				points[x][y].understory = false;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeLitter();
 			} else if(editType == 2) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = false;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeFloor();
 			} else if(editType == 3) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeUnderstory();
 			} else if(editType == 4) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].coniferous = true;
-				points[x][y].deciduous = false;
+				points[x][y].initializeConiferous();
 			} else if(editType == 5) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].deciduous = true;
-				points[x][y].coniferous = false;
+				points[x][y].initializeDeciduous();
+			} else {
+				points[x][y].initializeEmpty();
 			}
-			points[x][y].currentState = editType;
-			points[x][y].nextState = editType;
 			this.repaint();
 		}
 	}
@@ -220,38 +197,18 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 		int y = e.getY() / size;
 		if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
 			if(editType == 1) {
-				points[x][y].litter = true;
-				points[x][y].floor = false;
-				points[x][y].understory = false;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeLitter();
 			} else if(editType == 2) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = false;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeFloor();
 			} else if(editType == 3) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].coniferous = false;
-				points[x][y].deciduous = false;
+				points[x][y].initializeUnderstory();
 			} else if(editType == 4) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].coniferous = true;
-				points[x][y].deciduous = false;
+				points[x][y].initializeConiferous();
 			} else if(editType == 5) {
-				points[x][y].litter = true;
-				points[x][y].floor = true;
-				points[x][y].understory = true;
-				points[x][y].deciduous = true;
-				points[x][y].coniferous = false;
+				points[x][y].initializeDeciduous();
+			} else {
+				points[x][y].initializeEmpty();
 			}
-			points[x][y].currentState = editType;
-			points[x][y].nextState = editType;
 			this.repaint();
 		}
 	}

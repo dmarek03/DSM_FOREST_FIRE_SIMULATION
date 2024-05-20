@@ -15,32 +15,72 @@ public class Point {
 	protected List<Double> temperature;
 	private List<Point> neighbors;
 	public int currentState;
-	public int nextState;
 	private int numStates = 3;
 	static Random RND = new Random();
 	
 	public Point() {
-		this.currentState = 0;
-		this.nextState = 0;
 		this.neighbors = new ArrayList<Point>();
-		this.state = new ArrayList<>();
-		this.temperature = new ArrayList<>();
-		temperature.add(30.0);
-		for(int i = 0 ; i < height;i ++){
+		initializeEmpty();
+	}
+
+	public void initializeEmpty() {
+		litter = false;
+		floor = false;
+		understory = false;
+		coniferous = false;
+		deciduous = false;
+
+		currentState = 0;
+		state = new ArrayList<>();
+		temperature = new ArrayList<>();
+
+		for(int i = 0 ; i < height; i++){
 			state.add(1.0);
+			temperature.add(30.0);
 		}
+	}
+
+	public void initializeLitter() {
+		initializeEmpty();
+		litter = true;
+		currentState = 1;
+	}
+
+	public void initializeFloor() {
+		initializeEmpty();
+		litter = true;
+		floor = true;
+		currentState = 2;
+	}
+
+	public void initializeUnderstory() {
+		initializeEmpty();
+		litter = true;
+		floor = true;
+		understory = true;
+		currentState = 3;
+	}
+
+	public void initializeConiferous() {
+		initializeEmpty();
+		litter = true;
+		floor = true;
+		understory = true;
+		coniferous = true;
+		currentState = 4;
+	}
+
+	public void initializeDeciduous() {
+		initializeEmpty();
+		litter = true;
+		floor = true;
+		understory = true;
+		deciduous = true;
+		currentState = 5;
 	}
 	
 	public int getState() {
 		return currentState;
-	}
-
-	public void setState(int s) {
-		currentState = s;
-	}
-
-	public void changeState() {
-		currentState = nextState;
 	}
 
 	public void calculateNewState() {
@@ -50,20 +90,11 @@ public class Point {
 				if (neighbor.temperature.get(0) >= burningTemperature || neighbor.currentState == 2) {
 					if (RND.nextDouble() < 0.05) {
 						temperature.set(0, 400.0);
-						nextState = 2;
 						return;
 					}
 				}
 			}
 		}
-
-		nextState = currentState;
-	}
-
-	public void clear() {
-		temperature.set(0,0.0);
-		currentState = 0;
-		nextState = 0;
 	}
 	
 	public void addNeighbor(Point nei) {
@@ -72,29 +103,15 @@ public class Point {
 
 
     @Override
-	public String toString(){
-		return "Elevation:"+this.elevation+"\n"
-				+"Has litter:"+this.litter+"\n"
-				+"Has floor:"+this.floor
-				+"Has understory"+this.understory
-				+"Is coniferous "+this.coniferous+"\n"
-				+"Is deciduous "+this.deciduous+"\n"
-				+"Height:"+this.height+"\n"
-				+"States:"+this.state+"\n"
-				+"Temperature:"+this.temperature+"\n";
+	public String toString() {
+		return "Elevation:" + this.elevation + "\n"
+				+ "Has litter:" + this.litter + "\n"
+				+ "Has floor:" + this.floor
+				+ "Has understory" + this.understory
+				+ "Is coniferous " + this.coniferous + "\n"
+				+ "Is deciduous " + this.deciduous + "\n"
+				+ "Height:" + this.height + "\n"
+				+ "States:" + this.state + "\n"
+				+ "Temperature:" + this.temperature + "\n";
 	}
-	
-
-
-	public int countAliveNeighbour(){
-		int cnt = 0;
-		for(Point nei : this.neighbors){
-			if(nei.getState()==1){
-				cnt += 1;
-			}
-		}
-		return cnt;
-
-	}
-
 }
