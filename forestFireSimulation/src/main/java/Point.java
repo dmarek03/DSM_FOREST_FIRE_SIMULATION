@@ -10,13 +10,23 @@ public class Point {
 	public boolean understory;
 	public boolean coniferous;
 	public boolean deciduous;
-	private int height;
+	private double height;
 	private List<Double> state;
 	protected List<Double> temperature;
 	private List<Point> neighbors;
 	public int currentState;
 	private int numStates = 3;
 	static Random RND = new Random();
+	private double mediumConiferousHeight;
+	private double mediumDeciduousHeight;
+	private double mediumUnderstoryHeight;
+	private double mediumFloorHeight;
+	private double mediumConiferousHeightVariance;
+	private double mediumDeciduousHeightVariance;
+	private double mediumUnderstoryHeightVariance;
+	private double mediumFloorHeightVariance;
+	private double mediumLitterHeightVariance;
+	private double mediumLitterHeight;
 	
 	public Point() {
 		this.neighbors = new ArrayList<Point>();
@@ -44,6 +54,8 @@ public class Point {
 		initializeEmpty();
 		litter = true;
 		currentState = 1;
+
+		height = RND.nextGaussian(mediumLitterHeight,Math.sqrt(mediumLitterHeightVariance));
 	}
 
 	public void initializeFloor() {
@@ -51,6 +63,8 @@ public class Point {
 		litter = true;
 		floor = true;
 		currentState = 2;
+
+		height = RND.nextGaussian(mediumFloorHeight,Math.sqrt(mediumFloorHeightVariance));
 	}
 
 	public void initializeUnderstory() {
@@ -59,6 +73,8 @@ public class Point {
 		floor = true;
 		understory = true;
 		currentState = 3;
+
+		height = RND.nextGaussian(mediumUnderstoryHeight,Math.sqrt(mediumUnderstoryHeightVariance));
 	}
 
 	public void initializeConiferous() {
@@ -68,6 +84,8 @@ public class Point {
 		understory = true;
 		coniferous = true;
 		currentState = 4;
+
+		height = RND.nextGaussian(mediumConiferousHeight,Math.sqrt(mediumConiferousHeightVariance));
 	}
 
 	public void initializeDeciduous() {
@@ -77,6 +95,8 @@ public class Point {
 		understory = true;
 		deciduous = true;
 		currentState = 5;
+
+		height = RND.nextGaussian(mediumDeciduousHeight,Math.sqrt(mediumDeciduousHeightVariance));
 	}
 	
 	public int getState() {

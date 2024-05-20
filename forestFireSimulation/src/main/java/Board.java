@@ -21,14 +21,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 	private int mapWidth;
 	private int mapHeight;
-	private double mediumConiferousHeight;
-	private double mediumDeciduousHeight;
-	private double mediumUnderstoryHeight;
-	private double mediumFloorHeight;
-	private double mediumConiferousHeightVariance;
-	private double mediumDeciduousHeightVariance;
-	private double mediumUnderstoryHeightHeightVariance;
-	private double mediumFloorHeightVariance;
 	private double windVelocity;
 	private Directions windDirection;
 	private double mediumTreeAge;

@@ -25,6 +25,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 	private final int initDelay = 100;
 	private boolean running = false;
 
+
+
 	public GUI(JFrame jf) {
 		frame = jf;
 		timer = new Timer(initDelay, this);
