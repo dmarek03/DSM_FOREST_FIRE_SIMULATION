@@ -14,7 +14,7 @@ import javax.swing.event.MouseInputListener;
 
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
     private static final long serialVersionUID = 1L;
-    private Point[][] points;
+    private Point[][] points = new Point[0][0];
     public int editType = 0;
     private int size = 14;
     private double pointPercentage;
@@ -35,7 +35,10 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private double atmosphericPressure;
     private double maxFireTemperature;
 
-    public Board(int length, int height, double pointPercentage) {
+    private GUI gui;
+
+    public Board(GUI gui, int length, int height, double pointPercentage) {
+        this.gui = gui;
         addMouseListener(this);
         addComponentListener(this);
         addMouseMotionListener(this);
@@ -236,7 +239,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         int x = e.getX() / size;
         int y = e.getY() / size;
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-            // TODO: implemetation
+            gui.statsChanged(points[x][y]);
         }
     }
 

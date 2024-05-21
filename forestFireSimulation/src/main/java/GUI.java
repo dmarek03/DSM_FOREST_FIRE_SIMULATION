@@ -15,6 +15,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private static final long serialVersionUID = 1L;
     private Timer timer;
     private Board board;
+    private JPanel statsPanel;
     private JButton start;
     private JButton clear;
     private JSlider pred;
@@ -70,13 +71,13 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         buttonPanel.add(drawType);
 
         // Stats Panel
-        JPanel statsPanel = new JPanel();
+        statsPanel = new JPanel();
         statsPanel.setPreferredSize(new Dimension(200, 600));
         statsPanel.setLayout(new BorderLayout());
         JLabel statsLabel = new JLabel("Move the mouse over the board to see stats");
         statsPanel.add(statsLabel, BorderLayout.NORTH);
 
-        board = new Board(1024, 768 - buttonPanel.getHeight(), 0.1);
+        board = new Board(this, 1024, 768 - buttonPanel.getHeight(), 0.1);
         container.add(board, BorderLayout.CENTER);
         container.add(buttonPanel, BorderLayout.SOUTH);
         container.add(statsPanel, BorderLayout.WEST);
@@ -90,7 +91,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(timer)) {
             iterNum++;
-            frame.setTitle("Game of Life (" + Integer.toString(iterNum) + " iteration)");
+            frame.setTitle("Forest Fire Simulation (" + Integer.toString(iterNum) + " iteration)");
             board.iteration();
         } else {
             String command = e.getActionCommand();
@@ -126,5 +127,15 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
      */
     public void stateChanged(ChangeEvent e) {
         timer.setDelay(maxDelay - pred.getValue());
+    }
+
+    public void statsChanged(Point point) {
+        statsPanel.removeAll();
+
+        JLabel statsLabel = new JLabel(point.toString());
+        statsPanel.add(statsLabel, BorderLayout.NORTH);
+
+        statsPanel.revalidate();
+        statsPanel.repaint();
     }
 }
