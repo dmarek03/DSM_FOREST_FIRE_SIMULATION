@@ -4,9 +4,10 @@ import java.awt.Insets;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
+import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputListener;
-
+import java.util.Random;
 /**
  * Board with Points that may be expanded (with automatic change of cell
  * number) with mouse event listener
@@ -21,7 +22,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
     private int mapWidth;
     private int mapHeight;
-    private double windVelocity;
+    private double windVelocity =5.0;
     private Directions windDirection;
     private double mediumTreeAge;
     private double mediumTreeAgeVariance;
@@ -51,7 +52,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     public void iteration() {
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
-                points[x][y].calculateNewState();
+                points[x][y].calculateNewState(windVelocity);
 
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
@@ -69,8 +70,34 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         this.repaint();
     }
 
+    private void initialize_board(int width, int height) {
+        for (int x =8 ;x < 8 + width; ++x){
+            for (int y =5 ;y <5+ height; ++y){
+                Random rnd = new Random();
+                switch (rnd.nextInt(5)){
+                    case 0:
+                        points[x][y].initializeLitter();
+                        break;
+                    case 1:
+                        points[x][y].initializeFloor();
+                        break;
+                    case 2:
+                        points[x][y].initializeUnderstory();
+                        break;
+                    case 3:
+                        points[x][y].initializeConiferous();
+                        break;
+                    case 4:
+                        points[x][y].initializeDeciduous();
+                        break;
+                }
+            }
+        }
+    }
+
     private void initialize(int length, int height) {
         points = new Point[length][height];
+
 
         for (int x = 0; x < points.length; ++x) {
             for (int y = 0; y < points[x].length; ++y) {
@@ -81,7 +108,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 }
             }
         }
-
+        initialize_board(40, 40);
 
         for (int x = 1; x < points.length - 1; ++x) {
             for (int y = 1; y < points[x].length - 1; ++y) {
