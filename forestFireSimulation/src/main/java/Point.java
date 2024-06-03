@@ -201,11 +201,11 @@ public void calculateNewState(double windVelocity) {
 	if (currentState > 0) {
 		for(int j = 0; j < neighbors.size(); j++) {
 			Point neighbor = neighbors.get(j);
-			for (int i = 0; i < LEVELS; i++) {
+			for (int i = 0; i < 1; i++) {
 				if (neighbor.temperature.get(i) >= burningTemperature) {
 					double elevationDifference = Math.abs(elevation-neighbor.elevation);
 					double necessaryProb = 0.05/(1+elevationDifference*3);
-					if(i >= 4) necessaryProb /= Math.sqrt(2);
+					if(j >= 4) necessaryProb /= Math.sqrt(2);
 
 					if (RND.nextDouble() < necessaryProb) {
 						nextTemperature.set(i, neighbor.temperature.get(i));
@@ -218,7 +218,7 @@ public void calculateNewState(double windVelocity) {
 	// Spreading fire up and down
 	for (int i = 0; i < LEVELS - 1; i++) {
 		if (onFire.get(i)) {
-			if(RND.nextDouble() < 0.08) {
+			if(RND.nextDouble() < 0.8) {
 				nextTemperature.set(i + 1, nextTemperature.get(i + 1) * (1 + fireGrowthRate));
 				nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
 			}
@@ -227,7 +227,7 @@ public void calculateNewState(double windVelocity) {
 
 	for (int i = LEVELS - 1; i > 0; i--) {
 		if (onFire.get(i)) {
-			if(RND.nextDouble() < 0.08) {
+			if(RND.nextDouble() < 0.8) {
 				nextTemperature.set(i - 1, nextTemperature.get(i - 1) * (1 + fireGrowthRate));
 				nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
 			}
