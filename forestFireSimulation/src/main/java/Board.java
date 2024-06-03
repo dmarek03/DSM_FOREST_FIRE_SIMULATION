@@ -115,7 +115,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 // Moore'a Neighbourhood
                 points[x][y].addNeighbor(points[x][y - 1]);
                 points[x][y].addNeighbor(points[x + 1][y]);
-                points[x][y].addNeighbor(points[x + 1][y + 1]);
+                points[x][y].addNeighbor(points[x][y + 1]);
                 points[x][y].addNeighbor(points[x - 1][y]);
                 points[x][y].addNeighbor(points[x - 1][y - 1]);
                 points[x][y].addNeighbor(points[x + 1][y - 1]);

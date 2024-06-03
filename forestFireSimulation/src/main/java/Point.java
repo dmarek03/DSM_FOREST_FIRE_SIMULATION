@@ -34,8 +34,8 @@ public class Point {
 	private double mediumFloorHeightVariance;
 	private double mediumLitterHeightVariance;
 	private double mediumLitterHeight;
-	double w = 0.1;
-	double p =  0.05;
+	double w = 0.5;
+	double p =  0.5;
 	double distance = 1.0;
 	public List<Boolean> onFire;
 	private double fireGrowthRate = 0.15;
@@ -160,23 +160,26 @@ public class Point {
 	}
 
 	public void calculateNewState(double windVelocity) {
+		if(currentState == 0) {
+			return;
+		}
+
 		burn();
 
-		if (currentState > 0) {
-			for(int j = 0; j < neighbors.size(); j++) {
-				Point neighbor = neighbors.get(j);
 
-				if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
-					double elevationDifference = Math.sqrt(Math.pow((elevation-neighbor.elevation),2)+Math.pow(distance,2));
-					double necessaryProb = 0.06/(1+elevationDifference*1);
-					if(j >= 4) necessaryProb /= Math.sqrt(2);
-					if (RND.nextDouble() < necessaryProb) {
-						nextTemperature.set(0, neighbor.temperature.get(0));
-					}
+		for(int j = 0; j < neighbors.size(); j++) {
+			Point neighbor = neighbors.get(j);
+
+			if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
+				double elevationDifference = Math.sqrt(Math.pow((elevation-neighbor.elevation),2)+Math.pow(distance,2));
+				double necessaryProb = 0.06/(1+elevationDifference*1);
+				if(j >= 4) necessaryProb /= Math.sqrt(2);
+				if (RND.nextDouble() < necessaryProb) {
+					nextTemperature.set(0, neighbor.temperature.get(0));
 				}
-
 			}
 		}
+
 
 		// Spreading fire up and down
 		for (int i = 0; i < LEVELS - 1; i++) {
@@ -195,24 +198,25 @@ public class Point {
 			}
 		}
 
-		// Fire spreading with wind
-		/*double angle = calculateFireAngle(windVelocity, w);
-		for (Point neighbor : neighbors) {
-			double neighborElevation = neighbor.getElevation();
+		double angle = calculateFireAngle(windVelocity, w);
+		int direction = 4;
+		if(neighbors.size() > direction) {
 			double newElevation = elevation + height * Math.sin(Math.toRadians(angle));
-
-			if (height * Math.cos(Math.toRadians(angle)) > distance / 2) {
-				if (RND.nextDouble() < p) {
-					if (neighborElevation <= newElevation) {
-						for (int i = 0; i < LEVELS; i++) {
-							if (onFire.get(i)) {
-								neighbor.nextTemperature.set(i, temperature.get(i));
-							}
-						}
+			int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
+			if(i >= 0 && i < LEVELS) {
+				double actualDistance = distance;
+				if(direction > 3) {
+					actualDistance *= Math.sqrt(2);
+				}
+				if (height * Math.cos(Math.toRadians(angle)) > actualDistance / 2) {
+					if (RND.nextDouble() < p) {
+						neighbors.get(direction).nextTemperature.set(i, temperature.get(i));
 					}
 				}
 			}
-		}*/
+
+		}
+
 	}
 
 	public double getElevation() {
