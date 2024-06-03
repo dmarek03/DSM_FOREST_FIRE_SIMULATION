@@ -36,9 +36,9 @@ public class Point {
 	private double mediumLitterHeight;
 	double w = 0.1;
 	double p =  0.05;
-	double distance = 10.0;
+	double distance = 1.0;
 	public List<Boolean> onFire;
-	private double fireGrowthRate = 0.1;
+	private double fireGrowthRate = 0.15;
 	
 	public Point(int x, int y) {
 		this.neighbors = new ArrayList<Point>();
@@ -124,15 +124,17 @@ public class Point {
 	}
 
 	public void update() {
+		double actualBurnTemp = actualBurningTemperature();
+
 		for(int i = 0; i < LEVELS; i++) {
-			if (state.get(i) == 0.0){
+			/*if (state.get(i) == 0.0){
 				for(int j = 0;j <i ;j ++){
 					state.set(j, 0.0);
 				}
-			}
+			}*/
 			state.set(i,nextState.get(i));
 			temperature.set(i,nextTemperature.get(i));
-			if(temperature.get(i) >= actualBurningTemperature()) {
+			if(temperature.get(i) >= actualBurnTemp) {
 				onFire.set(i,Boolean.TRUE);
 			} else {
 				onFire.set(i,Boolean.FALSE);
@@ -144,115 +146,74 @@ public class Point {
 		double k = -0.1;
 		return burningTemperature * Math.exp(k * humidity / StandardHumidity);
 	}
-//
-//	public void calculateNewState() {
-//		double actualBurnTemp = actualBurningTemperature();
-//
-//		for (int i = 0; i < LEVELS; i++) {
-//			if (onFire.get(i)) {
-//				nextState.set(i, state.get(i));
-//				nextState.set(i, state.get(i) * (1 - 0.01 * temperature.get(i) / actualBurnTemp));
-//				nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
-//			}
-//		}
-//
-//		if (currentState > 0) {
-//			for (Point neighbor : neighbors) {
-//				for (int i = 0; i < LEVELS; i++) {
-//					if (neighbor.temperature.get(i) >= burningTemperature) {
-//						if (RND.nextDouble() < 0.05) {
-//							nextTemperature.set(i, neighbor.temperature.get(i));
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		// Implementing the fire spreading up and down
-//		for (int i = 0; i < LEVELS - 1; i++) {
-//			if (onFire.get(i)) {
-//				if(RND.nextDouble() < 0.08) {
-//					nextTemperature.set(i + 1, nextTemperature.get(i + 1) * (1 + fireGrowthRate));
-//					nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
-//				}
-//			}
-//		}
-//
-//		for (int i = LEVELS - 1; i > 0; i--) {
-//			if (onFire.get(i)) {
-//				if(RND.nextDouble() < 0.08) {
-//					nextTemperature.set(i - 1, nextTemperature.get(i - 1) * (1 + fireGrowthRate));
-//					nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
-//				}
-//			}
-//		}
-//	}
-public void calculateNewState(double windVelocity) {
-	double actualBurnTemp = actualBurningTemperature();
 
-	for (int i = 0; i < LEVELS; i++) {
-		if (onFire.get(i)) {
+	private void burn() {
+		double actualBurnTemp = actualBurningTemperature();
+
+		for (int i = 0; i < LEVELS; i++) {
 			nextState.set(i, state.get(i));
-			nextState.set(i, state.get(i) * (1 - 0.01 * temperature.get(i) / actualBurnTemp));
-			nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
+			if (onFire.get(i)) {
+				nextState.set(i, state.get(i) * (1 - 0.01 * temperature.get(i) / actualBurnTemp));
+				nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
+			}
 		}
 	}
 
-	if (currentState > 0) {
-		for(int j = 0; j < neighbors.size(); j++) {
-			Point neighbor = neighbors.get(j);
-			for (int i = 0; i < 1; i++) {
-				if (neighbor.temperature.get(i) >= burningTemperature) {
-					double elevationDifference = Math.abs(elevation-neighbor.elevation);
-					double necessaryProb = 0.05/(1+elevationDifference*3);
-					if(j >= 4) necessaryProb /= Math.sqrt(2);
+	public void calculateNewState(double windVelocity) {
+		burn();
 
+		if (currentState > 0) {
+			for(int j = 0; j < neighbors.size(); j++) {
+				Point neighbor = neighbors.get(j);
+
+				if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
+					double elevationDifference = Math.sqrt(Math.pow((elevation-neighbor.elevation),2)+Math.pow(distance,2));
+					double necessaryProb = 0.06/(1+elevationDifference*1);
+					if(j >= 4) necessaryProb /= Math.sqrt(2);
 					if (RND.nextDouble() < necessaryProb) {
-						nextTemperature.set(i, neighbor.temperature.get(i));
+						nextTemperature.set(0, neighbor.temperature.get(0));
 					}
+				}
+
+			}
+		}
+
+		// Spreading fire up and down
+		for (int i = 0; i < LEVELS - 1; i++) {
+			if (onFire.get(i) && !onFire.get(i+1)) {
+				if(RND.nextDouble() < 0.2) {
+					nextTemperature.set(i + 1, temperature.get(i));
 				}
 			}
 		}
-	}
 
-	// Spreading fire up and down
-	for (int i = 0; i < LEVELS - 1; i++) {
-		if (onFire.get(i)) {
-			if(RND.nextDouble() < 0.8) {
-				nextTemperature.set(i + 1, nextTemperature.get(i + 1) * (1 + fireGrowthRate));
-				nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
+		for (int i = LEVELS - 1; i > 0; i--) {
+			if (onFire.get(i) && !onFire.get(i-1)) {
+				if(RND.nextDouble() < 0.05) {
+					nextTemperature.set(i - 1, temperature.get(i));
+				}
 			}
 		}
-	}
 
-	for (int i = LEVELS - 1; i > 0; i--) {
-		if (onFire.get(i)) {
-			if(RND.nextDouble() < 0.8) {
-				nextTemperature.set(i - 1, nextTemperature.get(i - 1) * (1 + fireGrowthRate));
-				nextTemperature.set(i, nextTemperature.get(i) * (1 + fireGrowthRate));
-			}
-		}
-	}
+		// Fire spreading with wind
+		/*double angle = calculateFireAngle(windVelocity, w);
+		for (Point neighbor : neighbors) {
+			double neighborElevation = neighbor.getElevation();
+			double newElevation = elevation + height * Math.sin(Math.toRadians(angle));
 
-	// Fire spreading with wind
-	double angle = calculateFireAngle(windVelocity, w);
-	for (Point neighbor : neighbors) {
-		double neighborElevation = neighbor.getElevation();
-		double newElevation = elevation + height * Math.sin(Math.toRadians(angle));
-
-		if (height * Math.cos(Math.toRadians(angle)) > distance / 2) {
-			if (RND.nextDouble() < p) {
-				if (neighborElevation <= newElevation) {
-					for (int i = 0; i < LEVELS; i++) {
-						if (onFire.get(i)) {
-							neighbor.nextTemperature.set(i, temperature.get(i));
+			if (height * Math.cos(Math.toRadians(angle)) > distance / 2) {
+				if (RND.nextDouble() < p) {
+					if (neighborElevation <= newElevation) {
+						for (int i = 0; i < LEVELS; i++) {
+							if (onFire.get(i)) {
+								neighbor.nextTemperature.set(i, temperature.get(i));
+							}
 						}
 					}
 				}
 			}
-		}
+		}*/
 	}
-}
 
 	public double getElevation() {
 		return elevation;

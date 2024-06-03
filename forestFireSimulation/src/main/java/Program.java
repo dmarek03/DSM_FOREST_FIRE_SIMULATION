@@ -2,7 +2,6 @@ import javax.swing.JFrame;
 import java.io.Serial;
 
 public class Program extends JFrame {
-
     @Serial
     private static final long serialVersionUID = 1L;
     private GUI gof;
