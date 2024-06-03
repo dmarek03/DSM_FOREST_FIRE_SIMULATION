@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Point {
-	public static Integer []types ={0,1,2,3,4,5};
-	private static final int LEVELS = 10;
+	public static Integer []types ={0,1,2,3,4,5,6};
+	public static final int LEVELS = 10;
 	private int elevation;
 	public boolean litter;
 	public boolean floor;
@@ -12,6 +12,7 @@ public class Point {
 	public boolean coniferous;
 	public boolean deciduous;
 	private double height;
+	public boolean fireSource;
 	public List<Double> state;
 	protected List<Double> temperature;
 	private List<Point> neighbors;
@@ -37,20 +38,23 @@ public class Point {
 	double p =  0.05;
 	double distance = 10.0;
 	public List<Boolean> onFire;
-	private double fireGrowthRate = 0.05;
+	private double fireGrowthRate = 0.1;
 	
-	public Point() {
+	public Point(int x, int y) {
 		this.neighbors = new ArrayList<Point>();
+		elevation = Math.max(x+y-50,0);
 		initializeEmpty();
 	}
 
 	public void initializeEmpty() {
+		fireSource = false;
+
 		litter = false;
 		floor = false;
 		understory = false;
 		coniferous = false;
 		deciduous = false;
-		elevation = RND.nextInt(100);
+		//elevation = Math.max(x+y-50,0);
 
 		currentState = 0;
 		state = new ArrayList<>();
@@ -66,11 +70,13 @@ public class Point {
 			nextState.add(1.0);
 			nextTemperature.add(30.0);
 			onFire.add(Boolean.FALSE);
-
-			if(RND.nextDouble() < 0.001) {
-				temperature.set(i,500.0);
-			}
 		}
+	}
+
+	public void addFireSource() {
+		temperature.set(0,600.0);
+		fireSource = true;
+		onFire.set(0,Boolean.TRUE);
 	}
 
 	public void initializeLitter() {
@@ -126,7 +132,7 @@ public class Point {
 			}
 			state.set(i,nextState.get(i));
 			temperature.set(i,nextTemperature.get(i));
-			if(temperature.get(i) >= burningTemperature) {
+			if(temperature.get(i) >= actualBurningTemperature()) {
 				onFire.set(i,Boolean.TRUE);
 			} else {
 				onFire.set(i,Boolean.FALSE);
@@ -193,10 +199,15 @@ public void calculateNewState(double windVelocity) {
 	}
 
 	if (currentState > 0) {
-		for (Point neighbor : neighbors) {
+		for(int j = 0; j < neighbors.size(); j++) {
+			Point neighbor = neighbors.get(j);
 			for (int i = 0; i < LEVELS; i++) {
 				if (neighbor.temperature.get(i) >= burningTemperature) {
-					if (RND.nextDouble() < 0.05) {
+					double elevationDifference = Math.abs(elevation-neighbor.elevation);
+					double necessaryProb = 0.05/(1+elevationDifference*3);
+					if(i >= 4) necessaryProb /= Math.sqrt(2);
+
+					if (RND.nextDouble() < necessaryProb) {
 						nextTemperature.set(i, neighbor.temperature.get(i));
 					}
 				}

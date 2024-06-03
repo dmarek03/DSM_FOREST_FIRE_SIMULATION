@@ -101,7 +101,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
         for (int x = 0; x < points.length; ++x) {
             for (int y = 0; y < points[x].length; ++y) {
-                points[x][y] = new Point();
+                points[x][y] = new Point(x,y);
 
                 if (Math.random() < pointPercentage) {
                     points[x][y].currentState = 0;
@@ -183,12 +183,18 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
                             break;
                     }
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < Point.LEVELS; i++) {
                         if (points[x][y].state.get(i) < 1) {
                             g.setColor(new Color(0x333333));
                         }
                         if (points[x][y].onFire.get(i) == Boolean.TRUE) {
-                            g.setColor(new Color(0xff0000));
+                            if(points[x][y].temperature.get(i) < 1000)
+                                g.setColor(new Color(0xff0000));
+                            else if(points[x][y].temperature.get(i) < 1200)
+                                g.setColor(new Color(0xffa500));
+                            else
+                                g.setColor(new Color(0xffd700));
+                            break;
                         }
                     }
 
@@ -213,6 +219,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 points[x][y].initializeConiferous();
             } else if (editType == 5) {
                 points[x][y].initializeDeciduous();
+            } else if (editType == 6) {
+                points[x][y].addFireSource();
             } else {
                 points[x][y].initializeEmpty();
             }
@@ -240,6 +248,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 points[x][y].initializeConiferous();
             } else if (editType == 5) {
                 points[x][y].initializeDeciduous();
+            } else if (editType == 6) {
+                points[x][y].addFireSource();
             } else {
                 points[x][y].initializeEmpty();
             }
