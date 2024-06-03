@@ -1,3 +1,7 @@
+package simulation;
+
+import simulation.records.TrackedPoint;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -7,9 +11,9 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputListener;
-import java.util.Random;
+
 /**
- * Board with Points that may be expanded (with automatic change of cell
+ * simulation.Board with Points that may be expanded (with automatic change of cell
  * number) with mouse event listener
  */
 
@@ -20,9 +24,9 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private int size = 14;
     private double pointPercentage;
 
-    private int mapWidth;
-    private int mapHeight;
-    private double windVelocity =5.0;
+    private int mapWidth = 40;
+    private int mapHeight = 40;
+    private double windVelocity = 5.0;
     private Directions windDirection;
     private double mediumTreeAge;
     private double mediumTreeAgeVariance;
@@ -36,7 +40,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private double atmosphericPressure;
     private double maxFireTemperature;
 
-    private GUI gui;
+    private final GUI gui;
+    private TrackedPoint trackedPoint = null;
 
     public Board(GUI gui, int length, int height, double pointPercentage) {
         this.gui = gui;
@@ -58,6 +63,12 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
             for (int y = 0; y < points[x].length; ++y)
                 points[x][y].update();
 
+        if (trackedPoint != null) {
+            gui.statsChanged(trackedPoint.point(), trackedPoint.pointX(), trackedPoint.pointY());
+        } else {
+            gui.showInitialMessage();
+        }
+
         this.repaint();
     }
 
@@ -70,11 +81,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         this.repaint();
     }
 
-    private void initialize_board(int width, int height) {
-        for (int x =8 ;x < 8 + width; ++x){
-            for (int y =5 ;y <5+ height; ++y){
+    private void initializeBoard(int width, int height) {
+        for (int x = 8; x < 8 + width; ++x) {
+            for (int y = 5; y < 5 + height; ++y) {
                 Random rnd = new Random();
-                switch (rnd.nextInt(5)){
+                switch (rnd.nextInt(5)) {
                     case 0:
                         points[x][y].initializeLitter();
                         break;
@@ -101,14 +112,14 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
         for (int x = 0; x < points.length; ++x) {
             for (int y = 0; y < points[x].length; ++y) {
-                points[x][y] = new Point(x,y);
+                points[x][y] = new Point(x, y);
 
                 if (Math.random() < pointPercentage) {
                     points[x][y].currentState = 0;
                 }
             }
         }
-        initialize_board(40, 40);
+        initializeBoard(mapWidth, mapHeight);
 
         for (int x = 1; x < points.length - 1; ++x) {
             for (int y = 1; y < points[x].length - 1; ++y) {
@@ -121,14 +132,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 points[x][y].addNeighbor(points[x + 1][y - 1]);
                 points[x][y].addNeighbor(points[x + 1][y + 1]);
                 points[x][y].addNeighbor(points[x - 1][y + 1]);
-
             }
         }
-
-
     }
 
-    //paint background and separators between cells
+    // Paint background and separators between cells
     protected void paintComponent(Graphics g) {
         if (isOpaque()) {
             g.setColor(getBackground());
@@ -188,9 +196,9 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                             g.setColor(new Color(0x333333));
                         }
                         if (points[x][y].onFire.get(i) == Boolean.TRUE) {
-                            if(points[x][y].temperature.get(i) < 1000)
+                            if (points[x][y].temperature.get(i) < 1000)
                                 g.setColor(new Color(0xff0000));
-                            else if(points[x][y].temperature.get(i) < 1200)
+                            else if (points[x][y].temperature.get(i) < 1200)
                                 g.setColor(new Color(0xffa500));
                             else
                                 g.setColor(new Color(0xffd700));
@@ -258,6 +266,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     }
 
     public void mouseExited(MouseEvent e) {
+        gui.showInitialMessage();
+        trackedPoint = null;
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -276,7 +286,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         int x = e.getX() / size;
         int y = e.getY() / size;
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-            gui.statsChanged(points[x][y]);
+            gui.statsChanged(points[x][y], x, y);
+            trackedPoint = new TrackedPoint(points[x][y], x, y);
+        } else {
+            gui.showInitialMessage();
+            trackedPoint = null;
         }
     }
 

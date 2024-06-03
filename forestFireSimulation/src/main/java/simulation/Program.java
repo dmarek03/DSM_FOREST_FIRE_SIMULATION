@@ -1,3 +1,5 @@
+package simulation;
+
 import javax.swing.JFrame;
 import java.io.Serial;
 
@@ -13,7 +15,7 @@ public class Program extends JFrame {
         gof = new GUI(this);
         gof.initialize(this.getContentPane());
 
-        this.setSize(1024, 768);
+        this.setSize(1440, 1080);
         this.setVisible(true);
     }
 

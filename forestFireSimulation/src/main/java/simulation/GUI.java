@@ -1,15 +1,24 @@
+package simulation;
+
+import simulation.components.TextAreaRenderer;
+import simulation.records.PointStatistics;
+
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
- * Class containing GUI: board + buttons
+ * Class containing simulation.GUI: board + buttons
  */
 public class GUI extends JPanel implements ActionListener, ChangeListener {
     private static final long serialVersionUID = 1L;
@@ -25,7 +34,9 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private final int maxDelay = 500;
     private final int initDelay = 100;
     private boolean running = false;
-
+    private Font statsFont = new Font("SansSerif", Font.PLAIN, 12);
+    private DecimalFormat decimalFormat = new DecimalFormat("#.####");
+    private JLabel initialMessageLabel;
 
     public GUI(JFrame jf) {
         frame = jf;
@@ -34,10 +45,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     }
 
     /**
-     * @param container to which GUI and board is added
+     * @param container to which simulation.GUI and board is added
      */
     public void initialize(Container container) {
-        // Board
+        // simulation.Board
         container.setLayout(new BorderLayout());
         container.setSize(new Dimension(1024, 768));
 
@@ -74,8 +85,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         statsPanel = new JPanel();
         statsPanel.setPreferredSize(new Dimension(200, 600));
         statsPanel.setLayout(new BorderLayout());
-        JLabel statsLabel = new JLabel("Move the mouse over the board to see stats");
-        statsPanel.add(statsLabel, BorderLayout.NORTH);
+        initialMessageLabel = new JLabel("<html><div style='text-align: center;'>Move the mouse over the board to see stats</div></html>", SwingConstants.CENTER);
+        initialMessageLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        initialMessageLabel.setVerticalAlignment(SwingConstants.CENTER);
+        statsPanel.add(initialMessageLabel, BorderLayout.CENTER);
 
         board = new Board(this, 1024, 768 - buttonPanel.getHeight(), 0.1);
         container.add(board, BorderLayout.CENTER);
@@ -113,8 +126,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
                 board.clear();
                 frame.setTitle("Cellular Automata Toolbox");
             } else if (command.equals("drawType")) {
-                int newType = (Integer) drawType.getSelectedItem();
-                board.editType = newType;
+                board.editType = (int) (Integer) drawType.getSelectedItem();
             }
 
         }
@@ -129,13 +141,77 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         timer.setDelay(maxDelay - pred.getValue());
     }
 
-    public void statsChanged(Point point) {
+    public void statsChanged(Point point, int x, int y) {
         statsPanel.removeAll();
 
-        JLabel statsLabel = new JLabel(point.toString());
-        statsPanel.add(statsLabel, BorderLayout.NORTH);
+        PointStatistics stats = point.toPointStatistics(x, y);
+
+        String[] columnNames = {"Property", "Value"};
+        Object[][] data = {
+                {"Coordinates", "(" + stats.pointX() + ", " + stats.pointY() + ")"},
+                {"Elevation", stats.elevation()},
+                {"Litter", stats.litter()},
+                {"Floor", stats.floor()},
+                {"Understory", stats.understory()},
+                {"Coniferous", stats.coniferous()},
+                {"Deciduous", stats.deciduous()},
+                {"Height", formatDecimal(stats.height())},
+                {"Fire Source", stats.fireSource()},
+                {"Humidity", formatDecimal(stats.humidity())},
+                {"Current State", stats.currentState()},
+                {"States", listToString(stats.state())},
+                {"Temperatures", listToString(stats.temperature())},
+                {"On Fire", listToString(stats.onFire())}
+        };
+
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        JTable statsTable = new JTable(model) {
+            public Component prepareRenderer(javax.swing.table.TableCellRenderer renderer, int row, int column) {
+                return super.prepareRenderer(renderer, row, column);
+            }
+        };
+        statsTable.setFont(statsFont);
+        statsTable.setFillsViewportHeight(true);
+
+        statsTable.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
+
+        adjustRowHeights(statsTable);
+
+        JScrollPane scrollPane = new JScrollPane(statsTable);
+        statsPanel.add(scrollPane, BorderLayout.CENTER);
 
         statsPanel.revalidate();
         statsPanel.repaint();
+    }
+
+    public void showInitialMessage() {
+        statsPanel.removeAll();
+        statsPanel.add(initialMessageLabel, BorderLayout.CENTER);
+        statsPanel.revalidate();
+        statsPanel.repaint();
+    }
+
+    private void adjustRowHeights(JTable table) {
+        for (int row = 0; row < table.getRowCount(); row++) {
+            int rowHeight = table.getRowHeight();
+            Component comp = table.prepareRenderer(table.getCellRenderer(row, 1), row, 1);
+            rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+            table.setRowHeight(row, rowHeight);
+        }
+    }
+
+    private String formatDecimal(double value) {
+        return decimalFormat.format(value);
+    }
+
+    private String listToString(List<?> list) {
+        StringBuilder sb = new StringBuilder();
+        for (Object item : list) {
+            sb.append(item.toString()).append("\n");
+        }
+        if (!sb.isEmpty()) {
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
     }
 }

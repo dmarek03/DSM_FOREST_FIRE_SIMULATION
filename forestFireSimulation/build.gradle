@@ -20,5 +20,5 @@ test {
 }
 
 application {
-    getMainClass().set('Program')
+    getMainClass().set('simulation.Program')
 }
