@@ -1,6 +1,7 @@
 package simulation;
 
 import simulation.components.TextAreaRenderer;
+import simulation.records.BoardStatistics;
 import simulation.records.PointStatistics;
 
 import java.awt.BorderLayout;
@@ -24,7 +25,6 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private static final long serialVersionUID = 1L;
     private Timer timer;
     private Board board;
-    private JPanel statsPanel;
     private JButton start;
     private JButton clear;
     private JSlider pred;
@@ -34,9 +34,13 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private final int maxDelay = 500;
     private final int initDelay = 100;
     private boolean running = false;
+
     private Font statsFont = new Font("SansSerif", Font.PLAIN, 12);
     private DecimalFormat decimalFormat = new DecimalFormat("#.####");
     private JLabel initialMessageLabel;
+
+    private JPanel pointStatsPanel;
+    private JPanel worldStatsPanel;
 
     public GUI(JFrame jf) {
         frame = jf;
@@ -81,19 +85,26 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         buttonPanel.add(pred);
         buttonPanel.add(drawType);
 
-        // Stats Panel
-        statsPanel = new JPanel();
-        statsPanel.setPreferredSize(new Dimension(200, 600));
-        statsPanel.setLayout(new BorderLayout());
+        // Point Stats Panel
+        pointStatsPanel = new JPanel();
+        pointStatsPanel.setPreferredSize(new Dimension(200, 600));
+        pointStatsPanel.setLayout(new BorderLayout());
         initialMessageLabel = new JLabel("<html><div style='text-align: center;'>Move the mouse over the board to see stats</div></html>", SwingConstants.CENTER);
         initialMessageLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         initialMessageLabel.setVerticalAlignment(SwingConstants.CENTER);
-        statsPanel.add(initialMessageLabel, BorderLayout.CENTER);
+        pointStatsPanel.add(initialMessageLabel, BorderLayout.CENTER);
 
         board = new Board(this, 1024, 768 - buttonPanel.getHeight(), 0.1);
         container.add(board, BorderLayout.CENTER);
         container.add(buttonPanel, BorderLayout.SOUTH);
-        container.add(statsPanel, BorderLayout.WEST);
+        container.add(pointStatsPanel, BorderLayout.WEST);
+
+        // Board Stats Panel
+        worldStatsPanel = new JPanel();
+        worldStatsPanel.setPreferredSize(new Dimension(200, 600));
+        worldStatsPanel.setLayout(new BorderLayout());
+
+        container.add(worldStatsPanel, BorderLayout.EAST);
     }
 
     /**
@@ -106,6 +117,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
             iterNum++;
             frame.setTitle("Forest Fire Simulation (" + Integer.toString(iterNum) + " iteration)");
             board.iteration();
+            boardStatsChanged(board.toBoardStatistics());
         } else {
             String command = e.getActionCommand();
             if (command.equals("Start")) {
@@ -141,8 +153,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         timer.setDelay(maxDelay - pred.getValue());
     }
 
-    public void statsChanged(Point point, int x, int y) {
-        statsPanel.removeAll();
+    public void pointStatsChanged(Point point, int x, int y) {
+        pointStatsPanel.removeAll();
 
         PointStatistics stats = point.toPointStatistics(x, y);
 
@@ -178,17 +190,53 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         adjustRowHeights(statsTable);
 
         JScrollPane scrollPane = new JScrollPane(statsTable);
-        statsPanel.add(scrollPane, BorderLayout.CENTER);
+        pointStatsPanel.add(scrollPane, BorderLayout.CENTER);
 
-        statsPanel.revalidate();
-        statsPanel.repaint();
+        pointStatsPanel.revalidate();
+        pointStatsPanel.repaint();
+    }
+
+    public void boardStatsChanged(BoardStatistics stats) {
+        worldStatsPanel.removeAll();
+
+        String[] columnNames = {"Property", "Value"};
+        Object[][] data = {
+                {"All Fields", stats.allFields()},
+                {"Burnt Fields", stats.burntFields()},
+                {"Fire Fields", stats.fireFields()},
+                {"Litter Fields", stats.litterFields()},
+                {"Floor Fields", stats.floorFields()},
+                {"Understory Fields", stats.understoryFields()},
+                {"Coniferous Fields", stats.coniferousFields()},
+                {"Deciduous Fields", stats.deciduousFields()}
+        };
+
+        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        JTable statsTable = new JTable(model) {
+            public Component prepareRenderer(javax.swing.table.TableCellRenderer renderer, int row, int column) {
+                return super.prepareRenderer(renderer, row, column);
+            }
+        };
+        statsTable.setFont(statsFont);
+        statsTable.setFillsViewportHeight(true);
+
+        statsTable.getColumnModel().getColumn(0).setCellRenderer(new TextAreaRenderer());
+        statsTable.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
+
+        adjustRowHeights(statsTable);
+
+        JScrollPane scrollPane = new JScrollPane(statsTable);
+        worldStatsPanel.add(scrollPane, BorderLayout.CENTER);
+
+        worldStatsPanel.revalidate();
+        worldStatsPanel.repaint();
     }
 
     public void showInitialMessage() {
-        statsPanel.removeAll();
-        statsPanel.add(initialMessageLabel, BorderLayout.CENTER);
-        statsPanel.revalidate();
-        statsPanel.repaint();
+        pointStatsPanel.removeAll();
+        pointStatsPanel.add(initialMessageLabel, BorderLayout.CENTER);
+        pointStatsPanel.revalidate();
+        pointStatsPanel.repaint();
     }
 
     private void adjustRowHeights(JTable table) {

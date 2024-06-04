@@ -1,5 +1,6 @@
 package simulation;
 
+import simulation.records.BoardStatistics;
 import simulation.records.TrackedPoint;
 
 import java.awt.Color;
@@ -64,10 +65,12 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 points[x][y].update();
 
         if (trackedPoint != null) {
-            gui.statsChanged(trackedPoint.point(), trackedPoint.pointX(), trackedPoint.pointY());
+            gui.pointStatsChanged(trackedPoint.point(), trackedPoint.pointX(), trackedPoint.pointY());
         } else {
             gui.showInitialMessage();
         }
+
+        gui.boardStatsChanged(this.toBoardStatistics());
 
         this.repaint();
     }
@@ -138,6 +141,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
     // Paint background and separators between cells
     protected void paintComponent(Graphics g) {
+        gui.boardStatsChanged(this.toBoardStatistics());
         if (isOpaque()) {
             g.setColor(getBackground());
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -210,6 +214,57 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 }
             }
         }
+    }
+
+
+    public BoardStatistics toBoardStatistics() {
+        int allFieldsCount = 0;
+        int burntFieldsCount = 0;
+        int fireFieldsCount = 0;
+        int litterFieldsCount = 0;
+        int floorFieldsCount = 0;
+        int understoryFieldsCount = 0;
+        int coniferousFieldsCount = 0;
+        int deciduousFieldsCount = 0;
+
+        for (int x = 0; x < points.length; ++x) {
+            for (int y = 0; y < points[x].length; ++y) {
+                Point point = points[x][y];
+                if (point.currentState != PointStates.NO_FIRE) {
+                    boolean burntStatement = true;
+                    boolean fireStatement = true;
+                    for (int i = 0; i < Point.LEVELS; i++) {
+                        if (points[x][y].state.get(i) < 1 && burntStatement) {
+                            burntStatement = false;
+                            burntFieldsCount++;
+                        }
+                        if (points[x][y].onFire.get(i) == Boolean.TRUE && fireStatement) {
+                            fireStatement = false;
+                            fireFieldsCount++;
+                        }
+                    }
+
+                    allFieldsCount++;
+
+                    if (point.litter && burntStatement) litterFieldsCount++;
+                    if (point.floor && burntStatement) floorFieldsCount++;
+                    if (point.understory && burntStatement) understoryFieldsCount++;
+                    if (point.coniferous && burntStatement) coniferousFieldsCount++;
+                    if (point.deciduous && burntStatement) deciduousFieldsCount++;
+                }
+            }
+        }
+
+        return new BoardStatistics(
+                allFieldsCount,
+                burntFieldsCount,
+                fireFieldsCount,
+                litterFieldsCount,
+                floorFieldsCount,
+                understoryFieldsCount,
+                coniferousFieldsCount,
+                deciduousFieldsCount
+        );
     }
 
 
@@ -286,7 +341,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         int x = e.getX() / size;
         int y = e.getY() / size;
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-            gui.statsChanged(points[x][y], x, y);
+            gui.pointStatsChanged(points[x][y], x, y);
             trackedPoint = new TrackedPoint(points[x][y], x, y);
         } else {
             gui.showInitialMessage();
