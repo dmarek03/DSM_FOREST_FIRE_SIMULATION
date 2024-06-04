@@ -16,7 +16,7 @@ public record PointStatistics(
         List<Double> state,
         List<Double> temperature,
         double humidity,
-        int currentState,
+        String currentState,
         List<Boolean> onFire
 ) {
 }

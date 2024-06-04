@@ -20,12 +20,12 @@ import javax.swing.event.MouseInputListener;
 public class Board extends JComponent implements MouseInputListener, ComponentListener {
     private static final long serialVersionUID = 1L;
     private Point[][] points = new Point[0][0];
-    public int editType = 0;
+    public PointStates editType = PointStates.NO_FIRE;
     private int size = 14;
     private double pointPercentage;
 
-    private int mapWidth = 40;
-    private int mapHeight = 40;
+    private int mapWidth = 60;
+    private int mapHeight = 60;
     private double windVelocity = 5.0;
     private Directions windDirection;
     private double mediumTreeAge;
@@ -115,7 +115,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 points[x][y] = new Point(x, y);
 
                 if (Math.random() < pointPercentage) {
-                    points[x][y].currentState = 0;
+                    points[x][y].currentState = PointStates.NO_FIRE;
                 }
             }
         }
@@ -168,25 +168,25 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
         for (x = 0; x < points.length; ++x) {
             for (y = 0; y < points[x].length; ++y) {
-                if (points[x][y].getState() != 0) {
+                if (points[x][y].getState() != PointStates.NO_FIRE) {
                     switch (points[x][y].getState()) {
-                        case 1:
+                        case LITTER:
                             g.setColor(new Color(0x59350e));
 
                             break;
-                        case 2:
+                        case FLOOR:
                             g.setColor(new Color(0x9c6427));
 
                             break;
-                        case 3:
+                        case UNDERSTORY:
                             g.setColor(new Color(0xadd962));
 
                             break;
-                        case 4:
+                        case CONIFEROUS:
                             g.setColor(new Color(0x364f0d));
 
                             break;
-                        case 5:
+                        case DECIDUOUS:
                             g.setColor(new Color(0x6aa60a));
 
                             break;
@@ -210,24 +210,24 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 }
             }
         }
-
     }
+
 
     public void mouseClicked(MouseEvent e) {
         int x = e.getX() / size;
         int y = e.getY() / size;
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-            if (editType == 1) {
+            if (editType == PointStates.LITTER) {
                 points[x][y].initializeLitter();
-            } else if (editType == 2) {
+            } else if (editType == PointStates.FLOOR) {
                 points[x][y].initializeFloor();
-            } else if (editType == 3) {
+            } else if (editType == PointStates.UNDERSTORY) {
                 points[x][y].initializeUnderstory();
-            } else if (editType == 4) {
+            } else if (editType == PointStates.CONIFEROUS) {
                 points[x][y].initializeConiferous();
-            } else if (editType == 5) {
+            } else if (editType == PointStates.DECIDUOUS) {
                 points[x][y].initializeDeciduous();
-            } else if (editType == 6) {
+            } else if (editType == PointStates.FIRE) {
                 points[x][y].addFireSource();
             } else {
                 points[x][y].initializeEmpty();
@@ -246,17 +246,17 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         int x = e.getX() / size;
         int y = e.getY() / size;
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
-            if (editType == 1) {
+            if (editType == PointStates.LITTER) {
                 points[x][y].initializeLitter();
-            } else if (editType == 2) {
+            } else if (editType == PointStates.FLOOR) {
                 points[x][y].initializeFloor();
-            } else if (editType == 3) {
+            } else if (editType == PointStates.UNDERSTORY) {
                 points[x][y].initializeUnderstory();
-            } else if (editType == 4) {
+            } else if (editType == PointStates.CONIFEROUS) {
                 points[x][y].initializeConiferous();
-            } else if (editType == 5) {
+            } else if (editType == PointStates.DECIDUOUS) {
                 points[x][y].initializeDeciduous();
-            } else if (editType == 6) {
+            } else if (editType == PointStates.FIRE) {
                 points[x][y].addFireSource();
             } else {
                 points[x][y].initializeEmpty();

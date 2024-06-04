@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Point {
-    public static Integer[] types = {0, 1, 2, 3, 4, 5, 6};
+    public static PointStates[] types = PointStates.values();
     public static final int LEVELS = 10;
     private int elevation;
     public boolean litter;
@@ -24,8 +24,7 @@ public class Point {
     protected Double StandardHumidity = 0.5;
     protected Double humidity = 0.5;
     private List<Double> nextTemperature;
-    public int currentState;
-    private int numStates = 3;
+    public PointStates currentState;
     static Random RND = new Random();
     private double mediumConiferousHeight = 25;
     private double burningTemperature = 400.0;
@@ -58,9 +57,8 @@ public class Point {
         understory = false;
         coniferous = false;
         deciduous = false;
-        //elevation = Math.max(x+y-50,0);
 
-        currentState = 0;
+        currentState = PointStates.NO_FIRE;
         state = new ArrayList<>();
         humidity = 0.4;
         temperature = new ArrayList<>();
@@ -86,7 +84,7 @@ public class Point {
     public void initializeLitter() {
         initializeEmpty();
         litter = true;
-        currentState = 1;
+        currentState = PointStates.LITTER;
 
         height = RND.nextGaussian(mediumLitterHeight, Math.sqrt(mediumLitterHeightVariance));
     }
@@ -94,7 +92,7 @@ public class Point {
     public void initializeFloor() {
         initializeEmpty();
         floor = true;
-        currentState = 2;
+        currentState = PointStates.FLOOR;
 
         height = RND.nextGaussian(mediumFloorHeight, Math.sqrt(mediumFloorHeightVariance));
     }
@@ -102,7 +100,7 @@ public class Point {
     public void initializeUnderstory() {
         initializeEmpty();
         understory = true;
-        currentState = 3;
+        currentState = PointStates.UNDERSTORY;
 
         height = RND.nextGaussian(mediumUnderstoryHeight, Math.sqrt(mediumUnderstoryHeightVariance));
     }
@@ -110,7 +108,7 @@ public class Point {
     public void initializeConiferous() {
         initializeEmpty();
         coniferous = true;
-        currentState = 4;
+        currentState = PointStates.CONIFEROUS;
 
         height = RND.nextGaussian(mediumConiferousHeight, Math.sqrt(mediumConiferousHeightVariance));
     }
@@ -118,12 +116,12 @@ public class Point {
     public void initializeDeciduous() {
         initializeEmpty();
         deciduous = true;
-        currentState = 5;
+        currentState = PointStates.DECIDUOUS;
 
         height = RND.nextGaussian(mediumDeciduousHeight, Math.sqrt(mediumDeciduousHeightVariance));
     }
 
-    public int getState() {
+    public PointStates getState() {
         return currentState;
     }
 
@@ -131,11 +129,6 @@ public class Point {
         double actualBurnTemp = actualBurningTemperature();
 
         for (int i = 0; i < LEVELS; i++) {
-			/*if (state.get(i) == 0.0){
-				for(int j = 0;j <i ;j ++){
-					state.set(j, 0.0);
-				}
-			}*/
             state.set(i, nextState.get(i));
             temperature.set(i, nextTemperature.get(i));
             if (temperature.get(i) >= actualBurnTemp) {
@@ -147,7 +140,6 @@ public class Point {
     }
 
     private double actualBurningTemperature() {
-
         double k = -0.1;
         return burningTemperature * Math.exp(k * humidity / StandardHumidity);
     }
@@ -165,12 +157,11 @@ public class Point {
     }
 
     public void calculateNewState(double windVelocity) {
-        if (currentState == 0) {
+        if (currentState == PointStates.NO_FIRE) {
             return;
         }
 
         burn();
-
 
         for (int j = 0; j < neighbors.size(); j++) {
             Point neighbor = neighbors.get(j);
@@ -184,7 +175,6 @@ public class Point {
                 }
             }
         }
-
 
         // Spreading fire up and down
         for (int i = 0; i < LEVELS - 1; i++) {
@@ -219,15 +209,12 @@ public class Point {
                     }
                 }
             }
-
         }
-
     }
 
     public double getElevation() {
         return elevation;
     }
-
 
     private double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
@@ -240,7 +227,6 @@ public class Point {
     public void addNeighbor(Point nei) {
         neighbors.add(nei);
     }
-
 
     @Override
     public String toString() {
@@ -270,7 +256,7 @@ public class Point {
                 List.copyOf(this.state),
                 List.copyOf(this.temperature),
                 this.humidity,
-                this.currentState,
+                this.currentState.toString(),
                 List.copyOf(this.onFire)
         );
     }
