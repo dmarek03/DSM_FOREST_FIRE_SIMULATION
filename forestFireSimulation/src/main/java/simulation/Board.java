@@ -1,5 +1,6 @@
 package simulation;
 
+import simulation.records.BoardConfig;
 import simulation.records.BoardStatistics;
 import simulation.records.TrackedPoint;
 
@@ -22,43 +23,28 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private static final long serialVersionUID = 1L;
     private Point[][] points = new Point[0][0];
     public PointStates editType = PointStates.NO_FIRE;
-    private int size = 14;
-    private double pointPercentage;
 
-    private int mapWidth = 60;
-    private int mapHeight = 60;
-    private double windVelocity = 5.0;
-    private Directions windDirection;
-    private double mediumTreeAge;
-    private double mediumTreeAgeVariance;
-    private double mediumMoisture;
-    private double mediumMoistureVariance;
-    private double treeBurningTemperature;
-    private double understoryBurningTemperature;
-    private double floorBurningTemperature;
-    private double litterBurningTemperature;
-    private double overcast;
-    private double atmosphericPressure;
-    private double maxFireTemperature;
+    private BoardConfig boardConfig;
 
     private final GUI gui;
     private TrackedPoint trackedPoint = null;
 
-    public Board(GUI gui, int length, int height, double pointPercentage) {
+    public Board(GUI gui, int length, int height, BoardConfig boardConfig) {
         this.gui = gui;
+        this.boardConfig = boardConfig;
         addMouseListener(this);
         addComponentListener(this);
         addMouseMotionListener(this);
         setBackground(Color.WHITE);
         setOpaque(true);
-        this.pointPercentage = pointPercentage;
+        this.boardConfig = boardConfig;
     }
 
     // single iteration
     public void iteration() {
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
-                points[x][y].calculateNewState(windVelocity);
+                points[x][y].calculateNewState(boardConfig.windVelocity());
 
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
@@ -66,8 +52,6 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
         if (trackedPoint != null) {
             gui.pointStatsChanged(trackedPoint.point(), trackedPoint.pointX(), trackedPoint.pointY());
-        } else {
-            gui.showInitialMessage();
         }
 
         gui.boardStatsChanged(this.toBoardStatistics());
@@ -112,17 +96,16 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private void initialize(int length, int height) {
         points = new Point[length][height];
 
-
         for (int x = 0; x < points.length; ++x) {
             for (int y = 0; y < points[x].length; ++y) {
                 points[x][y] = new Point(x, y);
 
-                if (Math.random() < pointPercentage) {
+                if (Math.random() < boardConfig.pointPercentage()) {
                     points[x][y].currentState = PointStates.NO_FIRE;
                 }
             }
         }
-        initializeBoard(mapWidth, mapHeight);
+        initializeBoard(boardConfig.mapWidth(), boardConfig.mapHeight());
 
         for (int x = 1; x < points.length - 1; ++x) {
             for (int y = 1; y < points[x].length - 1; ++y) {
@@ -147,7 +130,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
         }
         g.setColor(Color.GRAY);
-        drawNetting(g, size);
+        drawNetting(g, boardConfig.size());
     }
 
     // draws the background netting
@@ -210,7 +193,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                         }
                     }
 
-                    g.fillRect((x * size) + 1, (y * size) + 1, (size - 1), (size - 1));
+                    g.fillRect((x * boardConfig.size()) + 1, (y * boardConfig.size()) + 1, (boardConfig.size() - 1), (boardConfig.size() - 1));
                 }
             }
         }
@@ -269,8 +252,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
 
     public void mouseClicked(MouseEvent e) {
-        int x = e.getX() / size;
-        int y = e.getY() / size;
+        int x = e.getX() / boardConfig.size();
+        int y = e.getY() / boardConfig.size();
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
             if (editType == PointStates.LITTER) {
                 points[x][y].initializeLitter();
@@ -292,14 +275,14 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     }
 
     public void componentResized(ComponentEvent e) {
-        int width = (this.getWidth() / size) + 1;
-        int height = (this.getHeight() / size) + 1;
+        int width = (this.getWidth() / boardConfig.size()) + 1;
+        int height = (this.getHeight() / boardConfig.size()) + 1;
         initialize(width, height);
     }
 
     public void mouseDragged(MouseEvent e) {
-        int x = e.getX() / size;
-        int y = e.getY() / size;
+        int x = e.getX() / boardConfig.size();
+        int y = e.getY() / boardConfig.size();
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
             if (editType == PointStates.LITTER) {
                 points[x][y].initializeLitter();
@@ -338,8 +321,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     }
 
     public void mouseMoved(MouseEvent e) {
-        int x = e.getX() / size;
-        int y = e.getY() / size;
+        int x = e.getX() / boardConfig.size();
+        int y = e.getY() / boardConfig.size();
         if ((x < points.length) && (x > 0) && (y < points[x].length) && (y > 0)) {
             gui.pointStatsChanged(points[x][y], x, y);
             trackedPoint = new TrackedPoint(points[x][y], x, y);

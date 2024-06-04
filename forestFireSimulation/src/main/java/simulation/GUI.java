@@ -1,6 +1,7 @@
 package simulation;
 
 import simulation.components.TextAreaRenderer;
+import simulation.records.BoardConfig;
 import simulation.records.BoardStatistics;
 import simulation.records.PointStatistics;
 
@@ -41,6 +42,8 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 
     private JPanel pointStatsPanel;
     private JPanel worldStatsPanel;
+    private JTable worldStatsTable;
+    private DefaultTableModel worldStatsModel;
 
     public GUI(JFrame jf) {
         frame = jf;
@@ -51,7 +54,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     /**
      * @param container to which simulation.GUI and board is added
      */
-    public void initialize(Container container) {
+    public void initialize(Container container, BoardConfig boardConfig) {
         // simulation.Board
         container.setLayout(new BorderLayout());
         container.setSize(new Dimension(1024, 768));
@@ -94,7 +97,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         initialMessageLabel.setVerticalAlignment(SwingConstants.CENTER);
         pointStatsPanel.add(initialMessageLabel, BorderLayout.CENTER);
 
-        board = new Board(this, 1024, 768 - buttonPanel.getHeight(), 0.1);
+        board = new Board(this, 1024, 768 - buttonPanel.getHeight(), boardConfig);
         container.add(board, BorderLayout.CENTER);
         container.add(buttonPanel, BorderLayout.SOUTH);
         container.add(pointStatsPanel, BorderLayout.WEST);
@@ -104,7 +107,36 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         worldStatsPanel.setPreferredSize(new Dimension(200, 600));
         worldStatsPanel.setLayout(new BorderLayout());
 
+        String[] columnNames = {"Property", "Value"};
+        Object[][] initialData = {
+                {"All Fields", 0},
+                {"Burnt Fields", 0},
+                {"Fire Fields", 0},
+                {"Litter Fields", 0},
+                {"Floor Fields", 0},
+                {"Understory Fields", 0},
+                {"Coniferous Fields", 0},
+                {"Deciduous Fields", 0}
+        };
+        worldStatsModel = new DefaultTableModel(initialData, columnNames);
+        worldStatsTable = new JTable(worldStatsModel) {
+            public Component prepareRenderer(javax.swing.table.TableCellRenderer renderer, int row, int column) {
+                return super.prepareRenderer(renderer, row, column);
+            }
+        };
+        worldStatsTable.setFont(statsFont);
+        worldStatsTable.setFillsViewportHeight(true);
+        worldStatsTable.getColumnModel().getColumn(0).setCellRenderer(new TextAreaRenderer());
+        worldStatsTable.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
+        adjustRowHeights(worldStatsTable);
+
+        JScrollPane scrollPane = new JScrollPane(worldStatsTable);
+        worldStatsPanel.add(scrollPane, BorderLayout.CENTER);
+
         container.add(worldStatsPanel, BorderLayout.EAST);
+
+        frame.setSize(new Dimension(1440, 1080));
+        frame.setLocationRelativeTo(null); // Center the window
     }
 
     /**
@@ -197,39 +229,16 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     }
 
     public void boardStatsChanged(BoardStatistics stats) {
-        worldStatsPanel.removeAll();
+        worldStatsModel.setValueAt(stats.allFields(), 0, 1);
+        worldStatsModel.setValueAt(stats.burntFields(), 1, 1);
+        worldStatsModel.setValueAt(stats.fireFields(), 2, 1);
+        worldStatsModel.setValueAt(stats.litterFields(), 3, 1);
+        worldStatsModel.setValueAt(stats.floorFields(), 4, 1);
+        worldStatsModel.setValueAt(stats.understoryFields(), 5, 1);
+        worldStatsModel.setValueAt(stats.coniferousFields(), 6, 1);
+        worldStatsModel.setValueAt(stats.deciduousFields(), 7, 1);
 
-        String[] columnNames = {"Property", "Value"};
-        Object[][] data = {
-                {"All Fields", stats.allFields()},
-                {"Burnt Fields", stats.burntFields()},
-                {"Fire Fields", stats.fireFields()},
-                {"Litter Fields", stats.litterFields()},
-                {"Floor Fields", stats.floorFields()},
-                {"Understory Fields", stats.understoryFields()},
-                {"Coniferous Fields", stats.coniferousFields()},
-                {"Deciduous Fields", stats.deciduousFields()}
-        };
-
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        JTable statsTable = new JTable(model) {
-            public Component prepareRenderer(javax.swing.table.TableCellRenderer renderer, int row, int column) {
-                return super.prepareRenderer(renderer, row, column);
-            }
-        };
-        statsTable.setFont(statsFont);
-        statsTable.setFillsViewportHeight(true);
-
-        statsTable.getColumnModel().getColumn(0).setCellRenderer(new TextAreaRenderer());
-        statsTable.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
-
-        adjustRowHeights(statsTable);
-
-        JScrollPane scrollPane = new JScrollPane(statsTable);
-        worldStatsPanel.add(scrollPane, BorderLayout.CENTER);
-
-        worldStatsPanel.revalidate();
-        worldStatsPanel.repaint();
+        adjustRowHeights(worldStatsTable);
     }
 
     public void showInitialMessage() {
