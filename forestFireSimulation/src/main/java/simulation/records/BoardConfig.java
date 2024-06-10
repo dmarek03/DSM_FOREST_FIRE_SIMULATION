@@ -1,8 +1,7 @@
 package simulation.records;
-
 import simulation.Directions;
 
-public record BoardConfig(
+public record  BoardConfig (
         int mapWidth,
         int mapHeight,
         double windVelocity,
