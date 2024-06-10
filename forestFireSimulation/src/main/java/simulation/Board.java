@@ -44,7 +44,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     public void iteration() {
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
-                points[x][y].calculateNewState(boardConfig.windVelocity());
+                points[x][y].calculateNewState(boardConfig.windVelocity(),boardConfig.windDirection());
 
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)

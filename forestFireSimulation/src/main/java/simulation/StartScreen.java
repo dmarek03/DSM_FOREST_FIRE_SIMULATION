@@ -43,7 +43,7 @@ public class StartScreen extends JFrame {
 
         mapWidthField = createField(formPanel, "Map Width:", "60");
         mapHeightField = createField(formPanel, "Map Height:", "60");
-        windVelocityField = createField(formPanel, "Wind Velocity:", "5.0");
+        windVelocityField = createField(formPanel, "Wind Velocity:", "100.0");
         windDirectionField = new JComboBox<>(Directions.values());
         formPanel.add(new JLabel("Wind Direction:"));
         formPanel.add(windDirectionField);
@@ -58,7 +58,7 @@ public class StartScreen extends JFrame {
         overcastField = createField(formPanel, "Overcast:", "1.0");
         atmosphericPressureField = createField(formPanel, "Atmospheric Pressure:", "1.0");
         maxFireTemperatureField = createField(formPanel, "Max Fire Temperature:", "1.0");
-        sizeField = createField(formPanel, "Size:", "14");
+        sizeField = createField(formPanel, "Size:", "7");
         pointPercentageField = createField(formPanel, "Point Percentage:", "0.1");
 
         JButton startButton = createButton("Start Simulation", "SansSerif", 18, this::startSimulation);

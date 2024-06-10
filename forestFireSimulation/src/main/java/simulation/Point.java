@@ -45,7 +45,7 @@ public class Point {
 
     public Point(int x, int y) {
         this.neighbors = new ArrayList<Point>();
-        elevation = Math.max(x + y - 50, 0);
+        elevation = Math.max(x + y - 700, 0);
         initializeEmpty();
     }
 
@@ -156,7 +156,7 @@ public class Point {
         }
     }
 
-    public void calculateNewState(double windVelocity) {
+    public void calculateNewState(double windVelocity, Directions dir) {
         if (currentState == PointStates.NO_FIRE) {
             return;
         }
@@ -193,8 +193,18 @@ public class Point {
             }
         }
 
+        int direction = switch(dir) {
+            case NORTH -> 0;
+            case EAST -> 1;
+            case SOUTH -> 2;
+            case WEST -> 3;
+            case NORTHWEST -> 4;
+            case NORTHEAST -> 5;
+            case SOUTHEAST -> 6;
+            case SOUTHWEST -> 7;
+        };
+
         double angle = calculateFireAngle(windVelocity, w);
-        int direction = 4;
         if (neighbors.size() > direction) {
             double newElevation = elevation + height * Math.sin(Math.toRadians(angle));
             int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
