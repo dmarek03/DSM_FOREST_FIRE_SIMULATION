@@ -30,7 +30,7 @@ public class Point {
     public PointStates currentState;
     static Random RND = new Random();
     private double mediumConiferousHeight = 25;
-    private double burningTemperature = 400.0;
+    private double burningTemperature;
     private double mediumDeciduousHeight = 35;
     private double mediumUnderstoryHeight;
     private double mediumFloorHeight;
@@ -90,6 +90,7 @@ public class Point {
         initializeEmpty();
         litter = true;
         currentState = PointStates.LITTER;
+        burningTemperature = conf.litterBurningTemperature();
 
         height = RND.nextGaussian(mediumLitterHeight, Math.sqrt(mediumLitterHeightVariance));
     }
@@ -98,6 +99,7 @@ public class Point {
         initializeEmpty();
         floor = true;
         currentState = PointStates.FLOOR;
+        burningTemperature = conf.floorBurningTemperature();
 
         height = RND.nextGaussian(mediumFloorHeight, Math.sqrt(mediumFloorHeightVariance));
     }
@@ -106,6 +108,7 @@ public class Point {
         initializeEmpty();
         understory = true;
         currentState = PointStates.UNDERSTORY;
+        burningTemperature = conf.understoryBurningTemperature();
 
         height = RND.nextGaussian(mediumUnderstoryHeight, Math.sqrt(mediumUnderstoryHeightVariance));
     }
@@ -114,6 +117,7 @@ public class Point {
         initializeEmpty();
         coniferous = true;
         currentState = PointStates.CONIFEROUS;
+        burningTemperature = conf.coniferousBurningTemperature();
 
         height = RND.nextGaussian(mediumConiferousHeight, Math.sqrt(mediumConiferousHeightVariance));
     }
@@ -122,6 +126,7 @@ public class Point {
         initializeEmpty();
         deciduous = true;
         currentState = PointStates.DECIDUOUS;
+        burningTemperature = conf.deciduousBurningTemperature();
 
         height = RND.nextGaussian(mediumDeciduousHeight, Math.sqrt(mediumDeciduousHeightVariance));
     }

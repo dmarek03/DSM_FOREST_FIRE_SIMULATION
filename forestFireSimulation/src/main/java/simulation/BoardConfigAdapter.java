@@ -17,7 +17,8 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
         //out.name("mediumTreeAgeVariance").value(config.mediumTreeAgeVariance());
         out.name("mediumMoisture").value(config.mediumMoisture());
         out.name("mediumMoistureVariance").value(config.mediumMoistureVariance());
-        out.name("treeBurningTemperature").value(config.treeBurningTemperature());
+        out.name("coniferousBurningTemperature").value(config.coniferousBurningTemperature());
+        out.name("deciduousBurningTemperature").value(config.deciduousBurningTemperature());
         out.name("understoryBurningTemperature").value(config.understoryBurningTemperature());
         out.name("floorBurningTemperature").value(config.floorBurningTemperature());
         out.name("litterBurningTemperature").value(config.litterBurningTemperature());
@@ -39,7 +40,8 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
         double mediumTreeAgeVariance = 0.0;
         double mediumMoisture = 0.0;
         double mediumMoistureVariance = 0.0;
-        double treeBurningTemperature = 0.0;
+        double coniferousBurningTemperature = 0.0;
+        double deciduousBurningTemperature = 0.0;
         double understoryBurningTemperature = 0.0;
         double floorBurningTemperature = 0.0;
         double litterBurningTemperature = 0.0;
@@ -60,7 +62,8 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
                 case "mediumTreeAgeVariance" -> mediumTreeAgeVariance = in.nextDouble();
                 case "mediumMoisture" -> mediumMoisture = in.nextDouble();
                 case "mediumMoistureVariance" -> mediumMoistureVariance = in.nextDouble();
-                case "treeBurningTemperature" -> treeBurningTemperature = in.nextDouble();
+                case "coniferousBurningTemperature" -> coniferousBurningTemperature = in.nextDouble();
+                case "deciduousBurningTemperature" -> deciduousBurningTemperature = in.nextDouble();
                 case "understoryBurningTemperature" -> understoryBurningTemperature = in.nextDouble();
                 case "floorBurningTemperature" -> floorBurningTemperature = in.nextDouble();
                 case "litterBurningTemperature" -> litterBurningTemperature = in.nextDouble();
@@ -81,7 +84,8 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
                 //mediumTreeAgeVariance,
                 mediumMoisture,
                 mediumMoistureVariance,
-                treeBurningTemperature,
+                coniferousBurningTemperature,
+                deciduousBurningTemperature,
                 understoryBurningTemperature,
                 floorBurningTemperature,
                 litterBurningTemperature,

@@ -18,7 +18,8 @@ public class StartScreen extends JFrame {
     //private final JTextField mediumTreeAgeVarianceField;
     private final JTextField mediumMoistureField;
     private final JTextField mediumMoistureVarianceField;
-    private final JTextField treeBurningTemperatureField;
+    private final JTextField coniferousBurningTemperatureField;
+    private final JTextField deciduousBurningTemperatureField;
     private final JTextField understoryBurningTemperatureField;
     private final JTextField floorBurningTemperatureField;
     private final JTextField litterBurningTemperatureField;
@@ -51,10 +52,11 @@ public class StartScreen extends JFrame {
         //mediumTreeAgeVarianceField = createField(formPanel, "Medium Tree Age Variance:", "1.0");
         mediumMoistureField = createField(formPanel, "Medium Moisture:", "0.4");
         mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance:", "0.01");
-        treeBurningTemperatureField = createField(formPanel, "Tree Burning Temperature:", "1.0");
-        understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature:", "1.0");
-        floorBurningTemperatureField = createField(formPanel, "Floor Burning Temperature:", "1.0");
-        litterBurningTemperatureField = createField(formPanel, "Litter Burning Temperature:", "1.0");
+        coniferousBurningTemperatureField = createField(formPanel, "Coniferous Tree Burning Temperature:", "400.0");
+        deciduousBurningTemperatureField = createField(formPanel, "Deciduous Tree Burning Temperature:", "400.0");
+        understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature:", "400.0");
+        floorBurningTemperatureField = createField(formPanel, "Floor Burning Temperature:", "400.0");
+        litterBurningTemperatureField = createField(formPanel, "Litter Burning Temperature:", "400.0");
         //overcastField = createField(formPanel, "Overcast:", "1.0");
         //atmosphericPressureField = createField(formPanel, "Atmospheric Pressure:", "1.0");
         //maxFireTemperatureField = createField(formPanel, "Max Fire Temperature:", "1.0");
@@ -140,7 +142,8 @@ public class StartScreen extends JFrame {
         //double mediumTreeAgeVariance = Double.parseDouble(mediumTreeAgeVarianceField.getText());
         double mediumMoisture = Double.parseDouble(mediumMoistureField.getText());
         double mediumMoistureVariance = Double.parseDouble(mediumMoistureVarianceField.getText());
-        double treeBurningTemperature = Double.parseDouble(treeBurningTemperatureField.getText());
+        double coniferousBurningTemperature = Double.parseDouble(coniferousBurningTemperatureField.getText());
+        double deciduousBurningTemperature = Double.parseDouble(deciduousBurningTemperatureField.getText());
         double understoryBurningTemperature = Double.parseDouble(understoryBurningTemperatureField.getText());
         double floorBurningTemperature = Double.parseDouble(floorBurningTemperatureField.getText());
         double litterBurningTemperature = Double.parseDouble(litterBurningTemperatureField.getText());
@@ -159,7 +162,8 @@ public class StartScreen extends JFrame {
                 //mediumTreeAgeVariance,
                 mediumMoisture,
                 mediumMoistureVariance,
-                treeBurningTemperature,
+                coniferousBurningTemperature,
+                deciduousBurningTemperature,
                 understoryBurningTemperature,
                 floorBurningTemperature,
                 litterBurningTemperature,
@@ -180,7 +184,8 @@ public class StartScreen extends JFrame {
         //mediumTreeAgeVarianceField.setText(String.valueOf(config.mediumTreeAgeVariance()));
         mediumMoistureField.setText(String.valueOf(config.mediumMoisture()));
         mediumMoistureVarianceField.setText(String.valueOf(config.mediumMoistureVariance()));
-        treeBurningTemperatureField.setText(String.valueOf(config.treeBurningTemperature()));
+        coniferousBurningTemperatureField.setText(String.valueOf(config.coniferousBurningTemperature()));
+        deciduousBurningTemperatureField.setText(String.valueOf(config.deciduousBurningTemperature()));
         understoryBurningTemperatureField.setText(String.valueOf(config.understoryBurningTemperature()));
         floorBurningTemperatureField.setText(String.valueOf(config.floorBurningTemperature()));
         litterBurningTemperatureField.setText(String.valueOf(config.litterBurningTemperature()));
