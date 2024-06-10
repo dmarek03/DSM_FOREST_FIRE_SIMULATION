@@ -98,7 +98,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
 
         for (int x = 0; x < points.length; ++x) {
             for (int y = 0; y < points[x].length; ++y) {
-                points[x][y] = new Point(x, y);
+                points[x][y] = new Point(x, y, boardConfig);
 
                 if (Math.random() < boardConfig.pointPercentage()) {
                     points[x][y].currentState = PointStates.NO_FIRE;

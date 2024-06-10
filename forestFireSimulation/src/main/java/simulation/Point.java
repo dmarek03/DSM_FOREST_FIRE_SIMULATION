@@ -1,10 +1,13 @@
 package simulation;
 
+import simulation.records.BoardConfig;
 import simulation.records.PointStatistics;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static java.lang.Math.max;
 
 public class Point {
     public static PointStates[] types = PointStates.values();
@@ -42,10 +45,12 @@ public class Point {
     double distance = 1.0;
     public List<Boolean> onFire;
     private double fireGrowthRate = 0.15;
+    private BoardConfig conf;
 
-    public Point(int x, int y) {
+    public Point(int x, int y, BoardConfig conf) {
+        this.conf = conf;
         this.neighbors = new ArrayList<Point>();
-        elevation = Math.max(x + y - 700, 0);
+        elevation = max(x + y - 700, 0);
         initializeEmpty();
     }
 
@@ -60,7 +65,7 @@ public class Point {
 
         currentState = PointStates.NO_FIRE;
         state = new ArrayList<>();
-        humidity = 0.4;
+        humidity = RND.nextGaussian(conf.mediumMoisture(), Math.sqrt(conf.mediumMoistureVariance()));;
         temperature = new ArrayList<>();
         nextState = new ArrayList<>();
         nextTemperature = new ArrayList<>();
@@ -152,6 +157,8 @@ public class Point {
             if (onFire.get(i)) {
                 nextState.set(i, state.get(i) * (1 - 0.01 * temperature.get(i) / actualBurnTemp));
                 nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
+            } else {
+                nextTemperature.set(i, max(40.0,temperature.get(i) * (1 - fireGrowthRate)));
             }
         }
     }

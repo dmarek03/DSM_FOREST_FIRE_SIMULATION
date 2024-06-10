@@ -13,17 +13,17 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
         out.name("mapHeight").value(config.mapHeight());
         out.name("windVelocity").value(config.windVelocity());
         out.name("windDirection").value(config.windDirection().name());
-        out.name("mediumTreeAge").value(config.mediumTreeAge());
-        out.name("mediumTreeAgeVariance").value(config.mediumTreeAgeVariance());
+        //out.name("mediumTreeAge").value(config.mediumTreeAge());
+        //out.name("mediumTreeAgeVariance").value(config.mediumTreeAgeVariance());
         out.name("mediumMoisture").value(config.mediumMoisture());
         out.name("mediumMoistureVariance").value(config.mediumMoistureVariance());
         out.name("treeBurningTemperature").value(config.treeBurningTemperature());
         out.name("understoryBurningTemperature").value(config.understoryBurningTemperature());
         out.name("floorBurningTemperature").value(config.floorBurningTemperature());
         out.name("litterBurningTemperature").value(config.litterBurningTemperature());
-        out.name("overcast").value(config.overcast());
-        out.name("atmosphericPressure").value(config.atmosphericPressure());
-        out.name("maxFireTemperature").value(config.maxFireTemperature());
+        //out.name("overcast").value(config.overcast());
+        //out.name("atmosphericPressure").value(config.atmosphericPressure());
+        //out.name("maxFireTemperature").value(config.maxFireTemperature());
         out.name("size").value(config.size());
         out.name("pointPercentage").value(config.pointPercentage());
         out.endObject();
@@ -77,17 +77,17 @@ public class BoardConfigAdapter extends TypeAdapter<BoardConfig> {
                 mapHeight,
                 windVelocity,
                 windDirection,
-                mediumTreeAge,
-                mediumTreeAgeVariance,
+                //mediumTreeAge,
+                //mediumTreeAgeVariance,
                 mediumMoisture,
                 mediumMoistureVariance,
                 treeBurningTemperature,
                 understoryBurningTemperature,
                 floorBurningTemperature,
                 litterBurningTemperature,
-                overcast,
-                atmosphericPressure,
-                maxFireTemperature,
+                //overcast,
+                //atmosphericPressure,
+                //maxFireTemperature,
                 size,
                 pointPercentage
         );

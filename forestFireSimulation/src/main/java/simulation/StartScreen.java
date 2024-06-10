@@ -14,17 +14,17 @@ public class StartScreen extends JFrame {
     private final JTextField mapHeightField;
     private final JTextField windVelocityField;
     private final JComboBox<Directions> windDirectionField;
-    private final JTextField mediumTreeAgeField;
-    private final JTextField mediumTreeAgeVarianceField;
+    //private final JTextField mediumTreeAgeField;
+    //private final JTextField mediumTreeAgeVarianceField;
     private final JTextField mediumMoistureField;
     private final JTextField mediumMoistureVarianceField;
     private final JTextField treeBurningTemperatureField;
     private final JTextField understoryBurningTemperatureField;
     private final JTextField floorBurningTemperatureField;
     private final JTextField litterBurningTemperatureField;
-    private final JTextField overcastField;
-    private final JTextField atmosphericPressureField;
-    private final JTextField maxFireTemperatureField;
+    //private final JTextField overcastField;
+    //private final JTextField atmosphericPressureField;
+    //private final JTextField maxFireTemperatureField;
     private final JTextField sizeField;
     private final JTextField pointPercentageField;
 
@@ -47,17 +47,17 @@ public class StartScreen extends JFrame {
         windDirectionField = new JComboBox<>(Directions.values());
         formPanel.add(new JLabel("Wind Direction:"));
         formPanel.add(windDirectionField);
-        mediumTreeAgeField = createField(formPanel, "Medium Tree Age:", "1.0");
-        mediumTreeAgeVarianceField = createField(formPanel, "Medium Tree Age Variance:", "1.0");
-        mediumMoistureField = createField(formPanel, "Medium Moisture:", "1.0");
-        mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance:", "1.0");
+        //mediumTreeAgeField = createField(formPanel, "Medium Tree Age:", "1.0");
+        //mediumTreeAgeVarianceField = createField(formPanel, "Medium Tree Age Variance:", "1.0");
+        mediumMoistureField = createField(formPanel, "Medium Moisture:", "0.4");
+        mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance:", "0.01");
         treeBurningTemperatureField = createField(formPanel, "Tree Burning Temperature:", "1.0");
         understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature:", "1.0");
         floorBurningTemperatureField = createField(formPanel, "Floor Burning Temperature:", "1.0");
         litterBurningTemperatureField = createField(formPanel, "Litter Burning Temperature:", "1.0");
-        overcastField = createField(formPanel, "Overcast:", "1.0");
-        atmosphericPressureField = createField(formPanel, "Atmospheric Pressure:", "1.0");
-        maxFireTemperatureField = createField(formPanel, "Max Fire Temperature:", "1.0");
+        //overcastField = createField(formPanel, "Overcast:", "1.0");
+        //atmosphericPressureField = createField(formPanel, "Atmospheric Pressure:", "1.0");
+        //maxFireTemperatureField = createField(formPanel, "Max Fire Temperature:", "1.0");
         sizeField = createField(formPanel, "Size:", "7");
         pointPercentageField = createField(formPanel, "Point Percentage:", "0.1");
 
@@ -136,17 +136,17 @@ public class StartScreen extends JFrame {
         int mapHeight = Integer.parseInt(mapHeightField.getText());
         double windVelocity = Double.parseDouble(windVelocityField.getText());
         Directions windDirection = (Directions) windDirectionField.getSelectedItem();
-        double mediumTreeAge = Double.parseDouble(mediumTreeAgeField.getText());
-        double mediumTreeAgeVariance = Double.parseDouble(mediumTreeAgeVarianceField.getText());
+        //double mediumTreeAge = Double.parseDouble(mediumTreeAgeField.getText());
+        //double mediumTreeAgeVariance = Double.parseDouble(mediumTreeAgeVarianceField.getText());
         double mediumMoisture = Double.parseDouble(mediumMoistureField.getText());
         double mediumMoistureVariance = Double.parseDouble(mediumMoistureVarianceField.getText());
         double treeBurningTemperature = Double.parseDouble(treeBurningTemperatureField.getText());
         double understoryBurningTemperature = Double.parseDouble(understoryBurningTemperatureField.getText());
         double floorBurningTemperature = Double.parseDouble(floorBurningTemperatureField.getText());
         double litterBurningTemperature = Double.parseDouble(litterBurningTemperatureField.getText());
-        double overcast = Double.parseDouble(overcastField.getText());
-        double atmosphericPressure = Double.parseDouble(atmosphericPressureField.getText());
-        double maxFireTemperature = Double.parseDouble(maxFireTemperatureField.getText());
+        //double overcast = Double.parseDouble(overcastField.getText());
+        //double atmosphericPressure = Double.parseDouble(atmosphericPressureField.getText());
+        //double maxFireTemperature = Double.parseDouble(maxFireTemperatureField.getText());
         int size = Integer.parseInt(sizeField.getText());
         double pointPercentage = Double.parseDouble(pointPercentageField.getText());
 
@@ -155,17 +155,17 @@ public class StartScreen extends JFrame {
                 mapHeight,
                 windVelocity,
                 windDirection,
-                mediumTreeAge,
-                mediumTreeAgeVariance,
+                //mediumTreeAge,
+                //mediumTreeAgeVariance,
                 mediumMoisture,
                 mediumMoistureVariance,
                 treeBurningTemperature,
                 understoryBurningTemperature,
                 floorBurningTemperature,
                 litterBurningTemperature,
-                overcast,
-                atmosphericPressure,
-                maxFireTemperature,
+                //overcast,
+                //atmosphericPressure,
+                //maxFireTemperature,
                 size,
                 pointPercentage
         );
@@ -176,17 +176,17 @@ public class StartScreen extends JFrame {
         mapHeightField.setText(String.valueOf(config.mapHeight()));
         windVelocityField.setText(String.valueOf(config.windVelocity()));
         windDirectionField.setSelectedItem(config.windDirection());
-        mediumTreeAgeField.setText(String.valueOf(config.mediumTreeAge()));
-        mediumTreeAgeVarianceField.setText(String.valueOf(config.mediumTreeAgeVariance()));
+        //mediumTreeAgeField.setText(String.valueOf(config.mediumTreeAge()));
+        //mediumTreeAgeVarianceField.setText(String.valueOf(config.mediumTreeAgeVariance()));
         mediumMoistureField.setText(String.valueOf(config.mediumMoisture()));
         mediumMoistureVarianceField.setText(String.valueOf(config.mediumMoistureVariance()));
         treeBurningTemperatureField.setText(String.valueOf(config.treeBurningTemperature()));
         understoryBurningTemperatureField.setText(String.valueOf(config.understoryBurningTemperature()));
         floorBurningTemperatureField.setText(String.valueOf(config.floorBurningTemperature()));
         litterBurningTemperatureField.setText(String.valueOf(config.litterBurningTemperature()));
-        overcastField.setText(String.valueOf(config.overcast()));
-        atmosphericPressureField.setText(String.valueOf(config.atmosphericPressure()));
-        maxFireTemperatureField.setText(String.valueOf(config.maxFireTemperature()));
+        //overcastField.setText(String.valueOf(config.overcast()));
+        //atmosphericPressureField.setText(String.valueOf(config.atmosphericPressure()));
+        //maxFireTemperatureField.setText(String.valueOf(config.maxFireTemperature()));
         sizeField.setText(String.valueOf(config.size()));
         pointPercentageField.setText(String.valueOf(config.pointPercentage()));
     }
