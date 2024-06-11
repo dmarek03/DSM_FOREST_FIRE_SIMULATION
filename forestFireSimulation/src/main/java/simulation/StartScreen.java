@@ -76,7 +76,7 @@ public class StartScreen extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         this.setContentPane(mainPanel);
-        this.setSize(1440, 1080);
+        this.setSize(1024, 768);
         this.setLocationRelativeTo(null); // Center the window
         this.setVisible(true);
     }

@@ -17,7 +17,7 @@ public class Program extends JFrame {
         gof = new GUI(this);
         gof.initialize(this.getContentPane(), boardConfig);
 
-        this.setSize(1440, 1080);
+        this.setSize(1024, 768);
         this.setVisible(true);
     }
 
