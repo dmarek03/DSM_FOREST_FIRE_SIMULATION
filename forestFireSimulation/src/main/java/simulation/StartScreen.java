@@ -44,23 +44,23 @@ public class StartScreen extends JFrame {
 
         mapWidthField = createField(formPanel, "Map Width:", "60");
         mapHeightField = createField(formPanel, "Map Height:", "60");
-        windVelocityField = createField(formPanel, "Wind Velocity:", "100.0");
+        windVelocityField = createField(formPanel, "Wind Velocity (km/h):", "10.0");
         windDirectionField = new JComboBox<>(Directions.values());
         formPanel.add(new JLabel("Wind Direction:"));
         formPanel.add(windDirectionField);
         //mediumTreeAgeField = createField(formPanel, "Medium Tree Age:", "1.0");
         //mediumTreeAgeVarianceField = createField(formPanel, "Medium Tree Age Variance:", "1.0");
-        mediumMoistureField = createField(formPanel, "Medium Moisture:", "0.4");
-        mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance:", "0.01");
-        coniferousBurningTemperatureField = createField(formPanel, "Coniferous Tree Burning Temperature:", "400.0");
-        deciduousBurningTemperatureField = createField(formPanel, "Deciduous Tree Burning Temperature:", "400.0");
-        understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature:", "400.0");
-        floorBurningTemperatureField = createField(formPanel, "Floor Burning Temperature:", "400.0");
-        litterBurningTemperatureField = createField(formPanel, "Litter Burning Temperature:", "400.0");
+        mediumMoistureField = createField(formPanel, "Medium Moisture (0.0-1.0):", "0.4");
+        mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance (0.0-1.0):", "0.001");
+        coniferousBurningTemperatureField = createField(formPanel, "Coniferous Tree Burning Temperature (C):", "260.0");
+        deciduousBurningTemperatureField = createField(formPanel, "Deciduous Tree Burning Temperature (C):", "310.0");
+        understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature (C):", "300.0");
+        floorBurningTemperatureField = createField(formPanel, "Floor Burning Temperature (C):", "275.0");
+        litterBurningTemperatureField = createField(formPanel, "Litter Burning Temperature (C):", "215.0");
         //overcastField = createField(formPanel, "Overcast:", "1.0");
         //atmosphericPressureField = createField(formPanel, "Atmospheric Pressure:", "1.0");
         //maxFireTemperatureField = createField(formPanel, "Max Fire Temperature:", "1.0");
-        sizeField = createField(formPanel, "Size:", "7");
+        sizeField = createField(formPanel, "Size (pixels):", "7");
         pointPercentageField = createField(formPanel, "Point Percentage:", "0.1");
 
         JButton startButton = createButton("Start Simulation", "SansSerif", 18, this::startSimulation);

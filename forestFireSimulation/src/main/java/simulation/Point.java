@@ -32,19 +32,19 @@ public class Point {
     private double mediumConiferousHeight = 25;
     private double burningTemperature;
     private double mediumDeciduousHeight = 35;
-    private double mediumUnderstoryHeight;
-    private double mediumFloorHeight;
+    private double mediumUnderstoryHeight = 5.0;
+    private double mediumFloorHeight = 0.05;
     private double mediumConiferousHeightVariance = 25;
     private double mediumDeciduousHeightVariance = 25;
-    private double mediumUnderstoryHeightVariance;
-    private double mediumFloorHeightVariance;
-    private double mediumLitterHeightVariance;
-    private double mediumLitterHeight;
-    double w = 0.5;
-    double p = 0.5;
+    private double mediumUnderstoryHeightVariance = 0.001;
+    private double mediumFloorHeightVariance = 0.001;
+    private double mediumLitterHeightVariance = 0.001;
+    private double mediumLitterHeight = 0.5;
+    double w = 0.2;
+    double p = 0.1;
     double distance = 1.0;
     public List<Boolean> onFire;
-    private double fireGrowthRate = 0.15;
+    private double fireGrowthRate = 0.2;
     private BoardConfig conf;
 
     public Point(int x, int y, BoardConfig conf) {
@@ -150,8 +150,8 @@ public class Point {
     }
 
     private double actualBurningTemperature() {
-        double k = -0.1;
-        return burningTemperature * Math.exp(k * humidity / StandardHumidity);
+        double k = 0.2;
+        return burningTemperature * humidity / StandardHumidity;
     }
 
     private void burn() {
@@ -160,7 +160,7 @@ public class Point {
         for (int i = 0; i < LEVELS; i++) {
             nextState.set(i, state.get(i));
             if (onFire.get(i)) {
-                nextState.set(i, state.get(i) * (1 - 0.01 * temperature.get(i) / actualBurnTemp));
+                nextState.set(i, state.get(i) * (1 - 0.005 * temperature.get(i) / actualBurnTemp));
                 nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
             } else {
                 nextTemperature.set(i, max(40.0,temperature.get(i) * (1 - fireGrowthRate)));
@@ -180,7 +180,7 @@ public class Point {
 
             if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
                 double elevationDifference = Math.sqrt(Math.pow((elevation - neighbor.elevation), 2) + Math.pow(distance, 2));
-                double necessaryProb = 0.06 / (1 + elevationDifference * 1);
+                double necessaryProb = 0.1 / (1 + elevationDifference * 1);
                 if (j >= 4) necessaryProb /= Math.sqrt(2);
                 if (RND.nextDouble() < necessaryProb) {
                     nextTemperature.set(0, neighbor.temperature.get(0));
@@ -218,17 +218,20 @@ public class Point {
 
         double angle = calculateFireAngle(windVelocity, w);
         if (neighbors.size() > direction) {
-            double newElevation = elevation + height * Math.sin(Math.toRadians(angle));
-            int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
-            if (i >= 0 && i < LEVELS) {
-                double actualDistance = distance;
-                if (direction > 3) {
-                    actualDistance *= Math.sqrt(2);
-                }
-                if (height * Math.cos(Math.toRadians(angle)) > actualDistance / 2) {
+            for(int k = LEVELS-1; k >= 0; k--) {
+                double newElevation = elevation + height*((double) k /(LEVELS-1)) * Math.sin(Math.toRadians(angle));
+
+                int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
+                if (i >= 0 && i < LEVELS) {
+                    double actualDistance = distance;
+                    if (direction > 3) {
+                        actualDistance *= Math.sqrt(2);
+                    }
+                    //if (height * Math.cos(Math.toRadians(angle)) > actualDistance / 2) {
                     if (RND.nextDouble() < p) {
                         neighbors.get(direction).nextTemperature.set(i, temperature.get(i));
                     }
+                    //}
                 }
             }
         }
@@ -243,6 +246,7 @@ public class Point {
     }
 
     private double calculateFireAngle(double windVelocity, double w) {
+        //System.out.println(90 * (2 - 2*sigmoid(w * windVelocity)));
         return 90 * (1 - sigmoid(w * windVelocity));
     }
 
