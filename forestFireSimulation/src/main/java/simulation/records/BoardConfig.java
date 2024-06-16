@@ -10,6 +10,7 @@ public record  BoardConfig (
         //double mediumTreeAgeVariance,
         double mediumMoisture,
         double mediumMoistureVariance,
+        double airTemperature,
         double coniferousBurningTemperature,
         double deciduousBurningTemperature,
         double understoryBurningTemperature,

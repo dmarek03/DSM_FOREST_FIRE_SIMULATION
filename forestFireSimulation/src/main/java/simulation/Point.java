@@ -163,7 +163,7 @@ public class Point {
                 nextState.set(i, state.get(i) * (1 - 0.005 * temperature.get(i) / actualBurnTemp));
                 nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
             } else {
-                nextTemperature.set(i, max(40.0,temperature.get(i) * (1 - fireGrowthRate)));
+                nextTemperature.set(i, max(conf.airTemperature(),temperature.get(i) * (1 - fireGrowthRate)));
             }
         }
     }

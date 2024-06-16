@@ -18,6 +18,7 @@ public class StartScreen extends JFrame {
     //private final JTextField mediumTreeAgeVarianceField;
     private final JTextField mediumMoistureField;
     private final JTextField mediumMoistureVarianceField;
+    private final JTextField airTemperatureField;
     private final JTextField coniferousBurningTemperatureField;
     private final JTextField deciduousBurningTemperatureField;
     private final JTextField understoryBurningTemperatureField;
@@ -52,6 +53,7 @@ public class StartScreen extends JFrame {
         //mediumTreeAgeVarianceField = createField(formPanel, "Medium Tree Age Variance:", "1.0");
         mediumMoistureField = createField(formPanel, "Medium Moisture (0.0-1.0):", "0.4");
         mediumMoistureVarianceField = createField(formPanel, "Medium Moisture Variance (0.0-1.0):", "0.001");
+        airTemperatureField = createField(formPanel, "Air temperature (C): ", "20.0");
         coniferousBurningTemperatureField = createField(formPanel, "Coniferous Tree Burning Temperature (C):", "260.0");
         deciduousBurningTemperatureField = createField(formPanel, "Deciduous Tree Burning Temperature (C):", "310.0");
         understoryBurningTemperatureField = createField(formPanel, "Understory Burning Temperature (C):", "300.0");
@@ -142,6 +144,7 @@ public class StartScreen extends JFrame {
         //double mediumTreeAgeVariance = Double.parseDouble(mediumTreeAgeVarianceField.getText());
         double mediumMoisture = Double.parseDouble(mediumMoistureField.getText());
         double mediumMoistureVariance = Double.parseDouble(mediumMoistureVarianceField.getText());
+        double airTemperature = Double.parseDouble(airTemperatureField.getText());
         double coniferousBurningTemperature = Double.parseDouble(coniferousBurningTemperatureField.getText());
         double deciduousBurningTemperature = Double.parseDouble(deciduousBurningTemperatureField.getText());
         double understoryBurningTemperature = Double.parseDouble(understoryBurningTemperatureField.getText());
@@ -162,6 +165,7 @@ public class StartScreen extends JFrame {
                 //mediumTreeAgeVariance,
                 mediumMoisture,
                 mediumMoistureVariance,
+                airTemperature,
                 coniferousBurningTemperature,
                 deciduousBurningTemperature,
                 understoryBurningTemperature,
@@ -184,6 +188,7 @@ public class StartScreen extends JFrame {
         //mediumTreeAgeVarianceField.setText(String.valueOf(config.mediumTreeAgeVariance()));
         mediumMoistureField.setText(String.valueOf(config.mediumMoisture()));
         mediumMoistureVarianceField.setText(String.valueOf(config.mediumMoistureVariance()));
+        airTemperatureField.setText(String.valueOf(config.airTemperature()));
         coniferousBurningTemperatureField.setText(String.valueOf(config.coniferousBurningTemperature()));
         deciduousBurningTemperatureField.setText(String.valueOf(config.deciduousBurningTemperature()));
         understoryBurningTemperatureField.setText(String.valueOf(config.understoryBurningTemperature()));
