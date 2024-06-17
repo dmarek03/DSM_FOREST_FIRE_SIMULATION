@@ -19,6 +19,13 @@ import javax.swing.table.DefaultTableModel;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 /**
  * Class containing simulation.GUI: board + buttons
  */
@@ -44,6 +51,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private JPanel worldStatsPanel;
     private JTable worldStatsTable;
     private DefaultTableModel worldStatsModel;
+
+    private XYSeries burntFieldsSeries;
+    private XYSeries burningFieldsSeries;
+    private XYSeries unaffectedFieldsSeries;
 
     public GUI(JFrame jf) {
         frame = jf;
@@ -97,7 +108,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         initialMessageLabel.setVerticalAlignment(SwingConstants.CENTER);
         pointStatsPanel.add(initialMessageLabel, BorderLayout.CENTER);
 
-        board = new Board(this, 1024, 768 - buttonPanel.getHeight(), boardConfig);
+        board = new Board(this, 1400, 1200 - buttonPanel.getHeight(), boardConfig);
         container.add(board, BorderLayout.CENTER);
         container.add(buttonPanel, BorderLayout.SOUTH);
         container.add(pointStatsPanel, BorderLayout.WEST);
@@ -135,7 +146,37 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
 
         container.add(worldStatsPanel, BorderLayout.EAST);
 
-        frame.setSize(new Dimension(1440, 1080));
+
+        burntFieldsSeries = new XYSeries("Burnt Fields");
+        burningFieldsSeries = new XYSeries("Burning Fields");
+        unaffectedFieldsSeries = new XYSeries("Unaffected Fields");
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(burntFieldsSeries);
+        dataset.addSeries(burningFieldsSeries);
+        dataset.addSeries(unaffectedFieldsSeries);
+
+
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                "Simulation Statistics",
+                "Iteration",
+                "Number of Fields",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true, true, false
+        );
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(800, 400));
+
+
+        JPanel chartContainer = new JPanel(new BorderLayout());
+        chartContainer.add(chartPanel, BorderLayout.CENTER);
+
+
+        container.add(chartContainer, BorderLayout.NORTH);
+
+        frame.setSize(new Dimension(1200, 1080));
         frame.setLocationRelativeTo(null); // Center the window
     }
 
@@ -237,6 +278,11 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         worldStatsModel.setValueAt(stats.understoryFields(), 5, 1);
         worldStatsModel.setValueAt(stats.coniferousFields(), 6, 1);
         worldStatsModel.setValueAt(stats.deciduousFields(), 7, 1);
+
+        int currentIteration = iterNum;
+        burntFieldsSeries.add(currentIteration, stats.burntFields());
+        burningFieldsSeries.add(currentIteration, stats.fireFields());
+        unaffectedFieldsSeries.add(currentIteration, stats.allFields()-stats.burntFields());
 
         adjustRowHeights(worldStatsTable);
     }
