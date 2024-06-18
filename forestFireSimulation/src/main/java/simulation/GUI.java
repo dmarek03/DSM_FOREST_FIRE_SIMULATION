@@ -1,21 +1,26 @@
 package simulation;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import simulation.adapters.MapShapeAdapter;
 import simulation.components.TextAreaRenderer;
 import simulation.records.BoardConfig;
 import simulation.records.BoardStatistics;
 import simulation.records.PointStatistics;
+import simulation.records.PointJson;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -33,8 +38,14 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     private static final long serialVersionUID = 1L;
     private Timer timer;
     private Board board;
+
+    private JButton restart;
+    private JButton regenerateMap;
+    private JButton loadMap;
+    private JButton saveMap;
     private JButton start;
     private JButton clear;
+
     private JSlider pred;
     private JFrame frame;
     private JComboBox<PointStates> drawType;
@@ -68,10 +79,31 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
     public void initialize(Container container, BoardConfig boardConfig) {
         // simulation.Board
         container.setLayout(new BorderLayout());
-        container.setSize(new Dimension(1024, 768));
+
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Button Panel
         JPanel buttonPanel = new JPanel();
+
+        restart = new JButton("Restart");
+        restart.setActionCommand("restart");
+        restart.setToolTipText("Restart simulation with new config");
+        restart.addActionListener(this);
+
+        regenerateMap = new JButton("Regenerate Map");
+        regenerateMap.setActionCommand("regenerateMap");
+        regenerateMap.setToolTipText("Generate new random map");
+        regenerateMap.addActionListener(this);
+
+        loadMap = new JButton("Load Map");
+        loadMap.setActionCommand("loadMap");
+        loadMap.setToolTipText("Load map from *.json file");
+        loadMap.addActionListener(this);
+
+        saveMap = new JButton("Save Map");
+        saveMap.setActionCommand("saveMap");
+        saveMap.setToolTipText("Save map from *.json file");
+        saveMap.addActionListener(this);
 
         start = new JButton("Start");
         start.setActionCommand("Start");
@@ -94,6 +126,10 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         drawType.addActionListener(this);
         drawType.setActionCommand("drawType");
 
+        buttonPanel.add(restart);
+        buttonPanel.add(regenerateMap);
+        buttonPanel.add(loadMap);
+        buttonPanel.add(saveMap);
         buttonPanel.add(start);
         buttonPanel.add(clear);
         buttonPanel.add(pred);
@@ -193,28 +229,90 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
             boardStatsChanged(board.toBoardStatistics());
         } else {
             String command = e.getActionCommand();
-            if (command.equals("Start")) {
-                if (!running) {
-                    timer.start();
-                    start.setText("Pause");
-                } else {
+            JFileChooser fileChooser = new JFileChooser();
+            switch (command) {
+                case "Start":
+                    if (!running) {
+                        timer.start();
+                        start.setText("Pause");
+                    } else {
+                        timer.stop();
+                        start.setText("Start");
+                    }
+                    running = !running;
+                    clear.setEnabled(true);
+                    break;
+
+                case "clear":
+                    iterNum = 0;
                     timer.stop();
-                    start.setText("Start");
-                }
-                running = !running;
-                clear.setEnabled(true);
+                    start.setEnabled(true);
+                    board.clear();
+                    frame.setTitle("Cellular Automata Toolbox");
+                    break;
 
-            } else if (command.equals("clear")) {
-                iterNum = 0;
-                timer.stop();
-                start.setEnabled(true);
-                board.clear();
-                frame.setTitle("Cellular Automata Toolbox");
-            } else if (command.equals("drawType")) {
-                board.editType = PointStates.fromDescription(drawType.getSelectedItem().toString());
+                case "restart":
+                    new StartScreen();
+                    frame.dispose();
+                    break;
+
+                case "drawType":
+                    board.editType = PointStates.fromDescription(drawType.getSelectedItem().toString());
+                    break;
+
+                case "regenerateMap":
+                    board.regenerateMap();
+                    break;
+
+                case "loadMap":
+                    int option = fileChooser.showOpenDialog(this);
+                    if (option == JFileChooser.APPROVE_OPTION) {
+                        File file = fileChooser.getSelectedFile();
+                        try (Reader reader = new FileReader(file)) {
+                            Gson gson = new GsonBuilder()
+                                    .registerTypeAdapter(PointJson.class, createPointJsonDeserializer())
+                                    .create();
+                            PointJson[] pointJsons = gson.fromJson(reader, PointJson[].class);
+                            board.updatePointsFromJson(pointJsons);
+
+                            JOptionPane.showMessageDialog(this, "Map loaded successfully.");
+                        } catch (IOException exception) {
+                            JOptionPane.showMessageDialog(this, "Error loading map: " + exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    break;
+
+                case "saveMap":
+                    Point[][] points = board.getPoints();
+                    fileChooser.setDialogTitle("Save Map File");
+                    fileChooser.setAcceptAllFileFilterUsed(false);
+
+                    int userSelection = fileChooser.showSaveDialog(null);
+                    if (userSelection == JFileChooser.APPROVE_OPTION) {
+                        File fileToSave = fileChooser.getSelectedFile();
+                        if (!fileToSave.getAbsolutePath().endsWith(".json")) {
+                            fileToSave = new File(fileToSave + ".json");
+                        }
+                        MapShapeAdapter.saveMap(points, fileToSave.getAbsolutePath());
+                    }
+                    break;
             }
-
         }
+    }
+
+    private JsonDeserializer<PointJson> createPointJsonDeserializer() {
+        return (json, typeOfT, context) -> new PointJson(
+                json.getAsJsonObject().get("x").getAsInt(),
+                json.getAsJsonObject().get("y").getAsInt(),
+                json.getAsJsonObject().get("elevation").getAsInt(),
+                json.getAsJsonObject().get("height").getAsFloat(),
+                PointStates.fromDescription(json.getAsJsonObject().get("currentState").getAsString()),
+                json.getAsJsonObject().get("litter").getAsBoolean(),
+                json.getAsJsonObject().get("floor").getAsBoolean(),
+                json.getAsJsonObject().get("understory").getAsBoolean(),
+                json.getAsJsonObject().get("coniferous").getAsBoolean(),
+                json.getAsJsonObject().get("deciduous").getAsBoolean()
+        );
     }
 
     /**
@@ -282,7 +380,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
         int currentIteration = iterNum;
         burntFieldsSeries.add(currentIteration, stats.burntFields());
         burningFieldsSeries.add(currentIteration, stats.fireFields());
-        unaffectedFieldsSeries.add(currentIteration, stats.allFields()-stats.burntFields());
+        unaffectedFieldsSeries.add(currentIteration, stats.allFields() - stats.burntFields());
 
         adjustRowHeights(worldStatsTable);
     }

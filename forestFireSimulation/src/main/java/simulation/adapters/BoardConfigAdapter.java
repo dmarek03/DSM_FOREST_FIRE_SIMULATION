@@ -1,7 +1,8 @@
-package simulation;
+package simulation.adapters;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import simulation.Directions;
 import simulation.records.BoardConfig;
 import java.io.IOException;
 

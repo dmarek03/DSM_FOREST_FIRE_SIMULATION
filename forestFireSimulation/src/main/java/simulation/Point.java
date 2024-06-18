@@ -1,6 +1,7 @@
 package simulation;
 
 import simulation.records.BoardConfig;
+import simulation.records.PointJson;
 import simulation.records.PointStatistics;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class Point {
 
         currentState = PointStates.NO_FIRE;
         state = new ArrayList<>();
-        humidity = RND.nextGaussian(conf.mediumMoisture(), Math.sqrt(conf.mediumMoistureVariance()));;
+        humidity = RND.nextGaussian(conf.mediumMoisture(), Math.sqrt(conf.mediumMoistureVariance()));
         temperature = new ArrayList<>();
         nextState = new ArrayList<>();
         nextTemperature = new ArrayList<>();
@@ -77,6 +78,33 @@ public class Point {
             nextState.add(1.0);
             nextTemperature.add(30.0);
             onFire.add(Boolean.FALSE);
+        }
+    }
+
+    public void updateFromPointJson(PointJson pointJson) {
+        this.elevation = pointJson.elevation();
+        this.height = pointJson.height();
+        this.currentState = pointJson.currentState();
+
+        if (pointJson.litter()) {
+            this.initializeLitter();
+        }
+        if (pointJson.floor()) {
+            this.initializeFloor();
+        }
+        if (pointJson.understory()) {
+            this.initializeUnderstory();
+        }
+        if (pointJson.coniferous()) {
+            this.initializeConiferous();
+        }
+        if (pointJson.deciduous()) {
+            this.initializeDeciduous();
+        }
+
+        if (pointJson.x() == 8) {
+            System.out.println(pointJson);
+            System.out.println(this);
         }
     }
 
@@ -163,7 +191,7 @@ public class Point {
                 nextState.set(i, state.get(i) * (1 - 0.005 * temperature.get(i) / actualBurnTemp));
                 nextTemperature.set(i, temperature.get(i) * (1 + fireGrowthRate) * nextState.get(i));
             } else {
-                nextTemperature.set(i, max(conf.airTemperature(),temperature.get(i) * (1 - fireGrowthRate)));
+                nextTemperature.set(i, max(conf.airTemperature(), temperature.get(i) * (1 - fireGrowthRate)));
             }
         }
     }
@@ -205,7 +233,7 @@ public class Point {
             }
         }
 
-        int direction = switch(dir) {
+        int direction = switch (dir) {
             case NORTH -> 0;
             case EAST -> 1;
             case SOUTH -> 2;
@@ -218,8 +246,8 @@ public class Point {
 
         double angle = calculateFireAngle(windVelocity, w);
         if (neighbors.size() > direction) {
-            for(int k = LEVELS-1; k >= 0; k--) {
-                double newElevation = elevation + height*((double) k /(LEVELS-1)) * Math.sin(Math.toRadians(angle));
+            for (int k = LEVELS - 1; k >= 0; k--) {
+                double newElevation = elevation + height * ((double) k / (LEVELS - 1)) * Math.sin(Math.toRadians(angle));
 
                 int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
                 if (i >= 0 && i < LEVELS) {
@@ -237,7 +265,11 @@ public class Point {
         }
     }
 
-    public double getElevation() {
+    public int getElevation() {
+        return elevation;
+    }
+
+    public double getHeight() {
         return elevation;
     }
 
@@ -257,11 +289,12 @@ public class Point {
     @Override
     public String toString() {
         return "Elevation:" + this.elevation + "\n"
+                + "Current State:" + this.currentState + "\n"
                 + "Has litter:" + this.litter + "\n"
-                + "Has floor:" + this.floor
-                + "Has understory" + this.understory
-                + "Is coniferous " + this.coniferous + "\n"
-                + "Is deciduous " + this.deciduous + "\n"
+                + "Has floor:" + this.floor + "\n"
+                + "Has understory: " + this.understory + "\n"
+                + "Is coniferous: " + this.coniferous + "\n"
+                + "Is deciduous: " + this.deciduous + "\n"
                 + "Height:" + this.height + "\n"
                 + "States:" + this.state + "\n"
                 + "Temperature:" + this.temperature + "\n";

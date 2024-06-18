@@ -1,4 +1,5 @@
 package simulation;
+import simulation.adapters.BoardConfigAdapter;
 import simulation.records.BoardConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -2,6 +2,7 @@ package simulation;
 
 import simulation.records.BoardConfig;
 import simulation.records.BoardStatistics;
+import simulation.records.PointJson;
 import simulation.records.TrackedPoint;
 
 import java.awt.Color;
@@ -29,6 +30,9 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private final GUI gui;
     private TrackedPoint trackedPoint = null;
 
+    private final int length;
+    private final int height;
+
     public Board(GUI gui, int length, int height, BoardConfig boardConfig) {
         this.gui = gui;
         this.boardConfig = boardConfig;
@@ -38,13 +42,31 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
         setBackground(Color.WHITE);
         setOpaque(true);
         this.boardConfig = boardConfig;
+
+        this.length = length;
+        this.height = height;
+        initialize(length, height);
+    }
+
+    public Point[][] getPoints() {
+        return points;
+    }
+
+    public void updatePointsFromJson(PointJson[] pointJsons) {
+        clear();
+
+        for (PointJson pointJson : pointJsons) {
+            points[pointJson.x()][pointJson.y()].updateFromPointJson(pointJson);
+        }
+
+        this.repaint();
     }
 
     // single iteration
     public void iteration() {
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
-                points[x][y].calculateNewState(boardConfig.windVelocity(),boardConfig.windDirection());
+                points[x][y].calculateNewState(boardConfig.windVelocity(), boardConfig.windDirection());
 
         for (int x = 0; x < points.length; ++x)
             for (int y = 0; y < points[x].length; ++y)
@@ -91,6 +113,11 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
                 }
             }
         }
+    }
+
+    public void regenerateMap() {
+        clear();
+        initialize(this.length, this.height);
     }
 
     private void initialize(int length, int height) {
@@ -275,9 +302,7 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     }
 
     public void componentResized(ComponentEvent e) {
-        int width = (this.getWidth() / boardConfig.size()) + 1;
-        int height = (this.getHeight() / boardConfig.size()) + 1;
-        initialize(width, height);
+        // Empty
     }
 
     public void mouseDragged(MouseEvent e) {
