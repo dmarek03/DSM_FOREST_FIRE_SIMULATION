@@ -233,7 +233,7 @@ public class Point {
             }
         }
 
-        int direction = switch (dir) {
+        int direction = switch(dir) {
             case NORTH -> 0;
             case EAST -> 1;
             case SOUTH -> 2;
@@ -244,20 +244,24 @@ public class Point {
             case SOUTHWEST -> 7;
         };
 
+        //System.out.println(direction);
+
         double angle = calculateFireAngle(windVelocity, w);
         if (neighbors.size() > direction) {
-            for (int k = LEVELS - 1; k >= 0; k--) {
-                double newElevation = elevation + height * ((double) k / (LEVELS - 1)) * Math.sin(Math.toRadians(angle));
+            for(int k = LEVELS-1; k >= 0; k--) {
+                double newElevation = elevation + height*((double) k /(LEVELS-1)) * Math.sin(Math.toRadians(angle));
 
-                int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height);
+                //System.out.println(newElevation);
+                int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height/((double) k /(LEVELS-1)));
                 if (i >= 0 && i < LEVELS) {
-                    double actualDistance = distance;
+                    double multiplier = 1;
                     if (direction > 3) {
-                        actualDistance *= Math.sqrt(2);
+                        multiplier = Math.sqrt(2);
                     }
                     //if (height * Math.cos(Math.toRadians(angle)) > actualDistance / 2) {
-                    if (RND.nextDouble() < p) {
-                        neighbors.get(direction).nextTemperature.set(i, temperature.get(i));
+                    if (RND.nextDouble() < p*multiplier) {
+                        //System.out.println(i);
+                        neighbors.get(direction).nextTemperature.set(i, temperature.get(k));
                     }
                     //}
                 }
