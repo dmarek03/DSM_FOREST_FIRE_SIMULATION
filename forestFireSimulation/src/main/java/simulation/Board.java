@@ -33,6 +33,8 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     private final int length;
     private final int height;
 
+    public int componentResizedNumber = 0;
+
     public Board(GUI gui, int length, int height, BoardConfig boardConfig) {
         this.gui = gui;
         this.boardConfig = boardConfig;
@@ -302,9 +304,13 @@ public class Board extends JComponent implements MouseInputListener, ComponentLi
     }
 
     public void componentResized(ComponentEvent e) {
-        int width = (this.getWidth() / boardConfig.size()) + 1;
-        int height = (this.getHeight() / boardConfig.size()) + 1;
-        initialize(width, height);
+        if (componentResizedNumber >= 2) {
+            int width = (this.getWidth() / boardConfig.size()) + 1;
+            int height = (this.getHeight() / boardConfig.size()) + 1;
+            initialize(width, height);
+        } else {
+            componentResizedNumber++;
+        }
     }
 
     public void mouseDragged(MouseEvent e) {
