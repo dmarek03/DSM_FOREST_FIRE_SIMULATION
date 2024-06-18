@@ -87,25 +87,20 @@ public class Point {
         this.height = pointJson.height();
         this.currentState = pointJson.currentState();
 
-        if (pointJson.litter()) {
+        if (this.currentState == PointStates.LITTER) {
             this.initializeLitter();
         }
-        if (pointJson.floor()) {
+        if (this.currentState == PointStates.FLOOR) {
             this.initializeFloor();
         }
-        if (pointJson.understory()) {
+        if (this.currentState == PointStates.UNDERSTORY) {
             this.initializeUnderstory();
         }
-        if (pointJson.coniferous()) {
+        if (this.currentState == PointStates.CONIFEROUS) {
             this.initializeConiferous();
         }
-        if (pointJson.deciduous()) {
+        if (this.currentState == PointStates.DECIDUOUS) {
             this.initializeDeciduous();
-        }
-
-        if (pointJson.x() == 8) {
-            System.out.println(pointJson);
-            System.out.println(this);
         }
     }
 
@@ -210,7 +205,9 @@ public class Point {
             if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
                 double elevationDifference = Math.sqrt(Math.pow((elevation - neighbor.elevation), 2) + Math.pow(distance, 2));
                 double necessaryProb = 0.1 / (1 + elevationDifference * 1);
-                if (j >= 4) {necessaryProb /= Math.sqrt(2);}
+                if (j >= 4) {
+                    necessaryProb /= Math.sqrt(2);
+                }
                 if (RND.nextDouble() < necessaryProb) {
                     nextTemperature.set(0, neighbor.temperature.get(0));
                 }
@@ -234,7 +231,7 @@ public class Point {
             }
         }
 
-        int direction = switch(dir) {
+        int direction = switch (dir) {
             case NORTH -> 0;
             case EAST -> 1;
             case SOUTH -> 2;
@@ -250,21 +247,21 @@ public class Point {
         double angle = calculateFireAngle(windVelocity, w);
 
         if (neighbors.size() > direction) {
-            for(int k = LEVELS-1; k >= 0; k--) {
-                double newElevation = elevation + height*((double) k /(LEVELS-1)) * Math.sin(Math.toRadians(angle));
+            for (int k = LEVELS - 1; k >= 0; k--) {
+                double newElevation = elevation + height * ((double) k / (LEVELS - 1)) * Math.sin(Math.toRadians(angle));
 
                 //System.out.println(newElevation);
-                int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height/((double) k /(LEVELS-1)));
+                int i = (int) ((newElevation - neighbors.get(direction).elevation) * LEVELS / neighbors.get(direction).height / ((double) k / (LEVELS - 1)));
                 if (i >= 0 && i < LEVELS) {
                     double multiplier = 1;
                     if (direction > 3) {
                         multiplier = Math.sqrt(2);
                     }
                     //if(height * Math.cos(Math.toRadians(angle)) > distance / 2 / multiplier) {
-                        if (RND.nextDouble() < p*multiplier) {
-                            neighbors.get(direction).temperature.set(i, temperature.get(k));
-                            neighbors.get(direction).nextTemperature.set(i, temperature.get(k));
-                        }
+                    if (RND.nextDouble() < p * multiplier) {
+                        neighbors.get(direction).temperature.set(i, temperature.get(k));
+                        neighbors.get(direction).nextTemperature.set(i, temperature.get(k));
+                    }
                     //}
                 }
             }

@@ -1,7 +1,5 @@
 package simulation.adapters;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import simulation.Point;
 
@@ -25,11 +23,6 @@ public class MapShapeAdapter {
                     writer.name("currentState").value(point.currentState.toString());
                     writer.name("elevation").value(point.getElevation());
                     writer.name("height").value(point.getHeight());
-                    writer.name("litter").value(point.litter);
-                    writer.name("floor").value(point.floor);
-                    writer.name("understory").value(point.understory);
-                    writer.name("coniferous").value(point.coniferous);
-                    writer.name("deciduous").value(point.deciduous);
                     writer.endObject();
                 }
             }

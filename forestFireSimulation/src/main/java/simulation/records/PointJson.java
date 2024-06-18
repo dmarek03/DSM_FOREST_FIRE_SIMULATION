@@ -7,12 +7,7 @@ public record PointJson(
         int y,
         int elevation,
         float height,
-        PointStates currentState,
-        boolean litter,
-        boolean floor,
-        boolean understory,
-        boolean coniferous,
-        boolean deciduous
+        PointStates currentState
 ) {
 
 }

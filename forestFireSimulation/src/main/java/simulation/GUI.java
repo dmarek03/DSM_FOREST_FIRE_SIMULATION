@@ -306,12 +306,7 @@ public class GUI extends JPanel implements ActionListener, ChangeListener {
                 json.getAsJsonObject().get("y").getAsInt(),
                 json.getAsJsonObject().get("elevation").getAsInt(),
                 json.getAsJsonObject().get("height").getAsFloat(),
-                PointStates.fromDescription(json.getAsJsonObject().get("currentState").getAsString()),
-                json.getAsJsonObject().get("litter").getAsBoolean(),
-                json.getAsJsonObject().get("floor").getAsBoolean(),
-                json.getAsJsonObject().get("understory").getAsBoolean(),
-                json.getAsJsonObject().get("coniferous").getAsBoolean(),
-                json.getAsJsonObject().get("deciduous").getAsBoolean()
+                PointStates.fromDescription(json.getAsJsonObject().get("currentState").getAsString())
         );
     }
 
