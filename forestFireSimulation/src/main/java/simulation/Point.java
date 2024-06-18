@@ -47,6 +47,7 @@ public class Point {
     public List<Boolean> onFire;
     private double fireGrowthRate = 0.2;
     private BoardConfig conf;
+    int count = 0;
 
     public Point(int x, int y, BoardConfig conf) {
         this.conf = conf;
@@ -209,7 +210,7 @@ public class Point {
             if (neighbor.temperature.get(0) >= actualBurningTemperature()) {
                 double elevationDifference = Math.sqrt(Math.pow((elevation - neighbor.elevation), 2) + Math.pow(distance, 2));
                 double necessaryProb = 0.1 / (1 + elevationDifference * 1);
-                if (j >= 4) necessaryProb /= Math.sqrt(2);
+                if (j >= 4) {necessaryProb /= Math.sqrt(2);}
                 if (RND.nextDouble() < necessaryProb) {
                     nextTemperature.set(0, neighbor.temperature.get(0));
                 }
@@ -247,6 +248,7 @@ public class Point {
         //System.out.println(direction);
 
         double angle = calculateFireAngle(windVelocity, w);
+
         if (neighbors.size() > direction) {
             for(int k = LEVELS-1; k >= 0; k--) {
                 double newElevation = elevation + height*((double) k /(LEVELS-1)) * Math.sin(Math.toRadians(angle));
@@ -258,11 +260,11 @@ public class Point {
                     if (direction > 3) {
                         multiplier = Math.sqrt(2);
                     }
-                    //if (height * Math.cos(Math.toRadians(angle)) > actualDistance / 2) {
-                    if (RND.nextDouble() < p*multiplier) {
-                        //System.out.println(i);
-                        neighbors.get(direction).nextTemperature.set(i, temperature.get(k));
-                    }
+                    //if(height * Math.cos(Math.toRadians(angle)) > distance / 2 / multiplier) {
+                        if (RND.nextDouble() < p*multiplier) {
+                            neighbors.get(direction).temperature.set(i, temperature.get(k));
+                            neighbors.get(direction).nextTemperature.set(i, temperature.get(k));
+                        }
                     //}
                 }
             }
